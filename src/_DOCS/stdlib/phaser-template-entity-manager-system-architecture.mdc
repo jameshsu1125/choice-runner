@@ -1,0 +1,200 @@
+# Architecture Rule: System, Manager, & Entity Classification
+
+## Core Principle: One Job, One Class
+
+This architecture enforces strict separation of concerns. Every class must be a **System**, a **Manager**, or an **Entity**. Mixing these roles is forbidden.
+
+### At-a-Glance Summary
+
+| Type        | Core Responsibility     | Core Question       | Manages...              | Listens to Global Events? |
+| :---------- | :---------------------- | :------------------ | :---------------------- | :------------------------ |
+| **System**  | **Behavior & Logic**    | "How does it work?" | Game Rules              | **Yes**                   |
+| **Manager** | **State & Collections** | "What exists now?"  | Collections of Entities | **No**                    |
+| **Entity**  | **Single Game Object**  | "What am I?"        | Its Own State           | **No (emits only)**       |
+
+---
+
+## Decision Flowchart
+
+Use this flowchart to classify any new class:
+
+1.  Does it listen to global game events (`onGameEvent`)?
+    -   **Yes** ➡️ It is a **System**. Stop here.
+2.  **No.** Does it manage a collection of other objects (e.g., `Map<string, Tower>`)?
+    -   **Yes** ➡️ It is a **Manager**. Stop here.
+3.  **No.** ➡️ It is an **Entity**.
+
+---
+
+## Rule 1: System (The "How")
+
+A class is a **System** if it contains game logic and processes interactions. Systems are the brains of the operation.
+
+**Primary Condition**: Listens to global game events using `onGameEvent(...)`.
+**Secondary Condition**: Contains business logic that determines game outcomes.
+
+**MUST:**
+
+-   Handle game logic and rules.
+-   Listen to global events and react to them.
+-   Orchestrate interactions between different Managers and Entities.
+-   Use `ServiceLocator` to get data from Managers.
+-   Be stateless or manage only temporary state for an operation.
+
+**MUST NOT:**
+
+-   Manage collections of entities (that's a Manager's job).
+-   Hold persistent game state.
+-   Instantiate Entities directly (ask a Manager to do it).
+
+**Example (`CombatSystem`):**
+
+```typescript
+// ✅ A System listens to events and applies game rules.
+export default class CombatSystem {
+    constructor(scene: Phaser.Scene) {
+        // Correct initialization will be in initialize(), not constructor.
+        // See instantiation pattern doc.
+    }
+
+    public initialize(): void {
+        onGameEvent(
+            GameEvents.PROJECTILE_COLLISION,
+            this.handleCollision.bind(this)
+        );
+    }
+
+    private handleCollision(data: CollisionData): void {
+        // Business Logic: How is damage calculated?
+        const damage = this.calculateDamage(data.projectile, data.target);
+
+        // Get data from a Manager to act upon an Entity.
+        const towerManager = ServiceLocator.get<TowerManager>("towerManager");
+        const tower = towerManager.getTower(data.target.id);
+        tower?.takeDamage(damage);
+    }
+}
+```
+
+---
+
+## Rule 2: Manager (The "What")
+
+A class is a **Manager** if it manages the lifecycle and storage of a collection of Entities. Managers are the accountants.
+
+**Primary Condition**: Manages a collection of objects (e.g., an array or map of `Tower` instances).
+**Secondary Condition**: Provides CRUD (Create, Read, Update, Delete) methods for that collection.
+
+**MUST:**
+
+-   Create, track, and destroy Entities.
+-   Hold the single source of truth for a collection of Entities.
+-   Provide methods for Systems to access these Entities (`getTower`, `getAllTowers`).
+
+**MUST NOT:**
+
+-   Contain complex game logic (that's a System's job).
+-   Listen to global game events.
+-   Directly reference other Managers.
+
+**Example (`TowerManager`):**
+
+```typescript
+// ✅ A Manager controls a collection of entities.
+export default class TowerManager {
+    private towers: Map<string, Tower> = new Map();
+
+    public createTower(config: TowerConfig): Tower {
+        const tower = new Tower(config);
+        this.towers.set(tower.getId(), tower);
+        return tower;
+    }
+
+    public getTower(id: string): Tower | undefined {
+        return this.towers.get(id);
+    }
+
+    public getAllTowers(): Tower[] {
+        return Array.from(this.towers.values());
+    }
+}
+```
+
+---
+
+## Rule 3: Entity (The "Who")
+
+A class is an **Entity** if it represents a single, self-contained object in the game. Entities are the actors.
+
+**Primary Condition**: Defines the data and internal methods for one game object (e.g., a `Tower`).
+
+**MUST:**
+
+-   Manage its own internal state (e.g., `this.health`).
+-   Contain methods that only affect itself (`takeDamage`, `fire`).
+-   Emit events about its own state changes (`emitGameEvent(GameEvents.TOWER_DAMAGED, ...)`).
+
+**MUST NOT:**
+
+-   Listen to global game events.
+-   Know about or reference other Systems or Entities.
+-   Manage collections of other objects.
+
+**Example (`Tower`):**
+
+```typescript
+// ✅ An Entity manages its own state and can emit events about itself.
+export default class Tower {
+    private health: number;
+
+    public takeDamage(damage: number): void {
+        this.health -= damage;
+        emitGameEvent(GameEvents.TOWER_DAMAGED, {
+            towerId: this.id,
+            newHealth: this.health,
+        });
+    }
+}
+```
+
+---
+
+## Common Anti-Patterns (Forbidden)
+
+#### ❌ The "God" Class (Manager + System)
+
+A Manager that also listens to events and contains complex game logic.
+
+```typescript
+// BAD: Manager listening to events.
+class TowerManager {
+    constructor() {
+        // WRONG! This is a System's job.
+        onGameEvent(GameEvents.ENEMY_SPAWNED, this.findTarget.bind(this));
+    }
+    // ... complex targeting logic here ...
+}
+```
+
+**Fix**: Create a separate `TargetingSystem` to handle the logic.
+
+#### ❌ The "Chatty" Entity
+
+An Entity that knows about other Entities or Systems.
+
+```typescript
+// BAD: Entity directly referencing a Manager.
+class Tower {
+    public findTarget(): void {
+        // WRONG! An entity should not know about Managers.
+        const enemyManager = ServiceLocator.get<EnemyManager>("enemyManager");
+        const enemies = enemyManager.getAllEnemies();
+        // ... logic ...
+    }
+}
+```
+
+**Fix**: The `Tower` should emit a `TOWER_NEEDS_TARGET` event. A `TargetingSystem` will listen and assign one.
+
+-   Keep this rule updated as architecture patterns evolve
+

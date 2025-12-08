@@ -1,0 +1,77 @@
+sequenceDiagram
+
+    participant User
+
+    participant GameBoard
+
+    participant EventBus
+
+    participant TurnManager
+
+    participant CombatSystem
+
+    participant ProjectileSystem
+
+    participant TowerSystem
+
+    participant VictoryManager
+
+
+
+    Note over User, VictoryManager: A single player turn.
+
+
+
+    %% Player Action
+
+    User->>GameBoard: Swaps two tiles.
+
+    GameBoard->>EventBus: emit(TILES_SWAPPED, {matches})
+
+    
+
+    %% Turn & Combat Logic
+
+    EventBus-->>TurnManager: on(TILES_SWAPPED)
+
+    TurnManager->>CombatSystem: processCombat(matches)
+
+    CombatSystem->>EventBus: emit(PROJECTILE_SPAWN, {damage})
+
+
+
+    %% Projectile & Collision
+
+    EventBus-->>ProjectileSystem: on(PROJECTILE_SPAWN)
+
+    ProjectileSystem->>ProjectileSystem: Creates projectile GameObject.
+
+    Note right of ProjectileSystem: Projectile moves across screen.
+
+    ProjectileSystem->>EventBus: emit(PROJECTILE_COLLISION, {targetId, damage})
+
+    
+
+    %% Systems React to Collision
+
+    EventBus-->>CombatSystem: on(PROJECTILE_COLLISION)
+
+    Note right of CombatSystem: Finds Tower entity via TowerManager <br/> and calls tower.takeDamage(damage). <br/> The Tower then emits TOWER_DAMAGED.
+
+
+
+    EventBus-->>TowerSystem: on(TOWER_DAMAGED)
+
+    TowerSystem->>TowerSystem: Animates the health bar UI.
+
+
+
+    EventBus-->>VictoryManager: on(TOWER_DAMAGED)
+
+    VictoryManager->>VictoryManager: Checks if all towers are destroyed.
+
+    alt Win/Loss Condition Met
+
+        VictoryManager->>EventBus: emit(GAME_OVER, {isVictory: false})
+
+    end

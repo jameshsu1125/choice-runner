@@ -1,0 +1,152 @@
+description: |
+    "Choice Runner" is a vibrant 3D hyper-casual runner where the core objective is to build a massive squad by making strategic choices. Players control an automatically running character, swiping left or right to navigate through gates that either add followers (blue + gates) or subtract them (red - gates). This growing squad automatically fires projectiles to defeat enemies, like cartoon ghosts, that block the road. The challenge lies in constantly choosing the path that maximizes your numbers, as losing all your squad members to enemies or negative choices results in defeat. With its simple swipe controls, colorful visuals, and addictive number-growing loop, the game offers fast-paced, decision-based action.
+complex_assets:
+    - background_road:
+          prompt: Transform the whole white zone in the second image to a thoroughfare matching the similar design, materials, ground color and stylized 3D graphic aesthetic of the first image. Replicate the design, ground color, textures, muted color palette, and any non-gaming characteristic ground elements seen in the environment of the first image onto the thoroughfare and its immediate surroundings. The thoroughfare must maintain its exact length and width, connecting the top and bottom of the image precisely as it does in the second image with the same view angle and perspective like a straight, two-lane wide thoroughfare, using a precise one-point linear perspective where the low, centered, eye-level view exaggerates the infinite length as the edges, occupying nearly the full width in the immediate foreground, while undergoing this stylistic transformation. Do not generate any gaming user interfaces, effects, characters or texts. Do not generate pavement or side markings on roads. Keep only the thoroughfare part, other part remains black.
+          mask: cache/references/road-white.png
+          background: opaque
+          size: 1024x1536
+          placement: cache/references/road.png
+          num_candidates: 1
+          sequence_order: 0
+          group: bg_group
+          generation_method: normal
+    - background_image:
+          prompt: Replace the whole non-thoroughfare areas in the first image with a full generated background based on the design, color, content and style of the second image, but must align the same view angle of the thoroughfare in the first image. Keep the same view angle of the first image, and keep the thoroughfare connecting the top and the bottom of the image precisely as it does in the first image. Do not generate any gaming effects, user interfaces or texts. Keep the thoroughfare and the whole generated background scenery with the same view angle as in the first image.
+          # NOTE: The 'mask' parameter here is NOT used for traditional masking. Instead, it serves as a
+          # second reference image input to the generation model. The first input comes from 'depends_on'
+          # (the generated road), and this mask provides the original game screenshot for style/design
+          # reference. This is a workaround using the mask field's capability to pass a second image to
+          # the model.
+          mask: reference_frame.png
+          background: opaque
+          size: 1024x1536
+          placement: cache/references/background-road.png
+          num_candidates: 1
+          generation_method: sequence
+          sequence_order: 1
+          depends_on: background_road
+          group: bg_group
+    - background_final:
+          prompt: Please remove all gaming user interfaces, games characters, gaming effects, or texts, from the first image and remain the background and other surroundings. Also remove all side lines, center dividing lines, dashed lines, and traffic markings of any kind on the thoroughfare. For the thoroughfare decoration, please make the thoroughfare design, color, styles, sides, decorations more integrated with the surrounding environment. Make sure the viewing angle and the perspective of the generated image must be the same as that of the white thoroughfare in the second image, adhere to the ground of the background, and soften the edges of the thoroughfare side where it meets the ground, and create a more natural and blended transition.
+          mask: cache/references/road-white.png
+          background: opaque
+          size: 1024x1536
+          placement: public/assets/background.png
+          num_candidates: 1
+          generation_method: sequence
+          sequence_order: 2
+          depends_on: background_image
+          group: bg_group
+    - characterRunning:
+          prompt: |
+              You are generating a character for a game animation.
+              Create a character running away from the camera (back facing towards the camera) with a white background. The character should be suitable for a mobile game and should be viewed from behind.
+              Requirements:
+              - Character must be running in a straight line away from the camera
+              - Character's back should always be facing towards the camera
+              - Both hands must be clearly visible during the running motion
+              - Background must be completely white
+              - Character should be appropriate for a mobile game (not too detailed, clear silhouette)
+              - The character should have a good running pose that shows movement
+              - Character should be centered in the frame
+              - Use a clean, game-appropriate art style
+              The character will be used to generate an animation sequence, so ensure the pose is dynamic and shows clear running motion from behind.
+          size: 1024x1536
+          background: opaque
+          aspect_ratio: 900x1600
+          padding: 100
+          placement: cache/references/character-running.png
+          num_candidates: 1
+          group: player
+          generation_method: normal
+    - supplementArmy:
+          prompt: Create a character facing the camera (face facing towards the camera) with a transparent background. The character should be suitable for a mobile game. Make sure the character (hands are clear) is focused in the center and not cropped or truncated.
+          placement: public/assets/supplement-item-army.png
+          size: 1024x1536
+          background: transparent
+          num_candidates: 1
+          group: player
+          generation_method: sequence
+          depends_on: characterRunning
+    #     - supplementFirePower1:
+    #           prompt: Generate a weapon of level 1 which be
+    #           placement: public/assets/supplement-item-firepower.png
+    #           group: weapon
+    #           size: 1024x1024
+    #           background: transparent
+    #           num_candidates: 1
+    # - supplementFirePower2:
+    #       prompt: Generate a weapon replacing the of level 2 which place on top of a wooden barrel
+    #       placement: public/assets/supplement-item-firepower-2.png
+    #       group: weapon
+    - enemyRunning:
+          prompt: |
+              You are generating an evil enemy character for a game animation.
+              Create a character running towards the camera (front facing towards the camera) with a white background. The character should be suitable for a mobile game and should be viewed from front.
+              This is a enemy character found in the game of Level 1
+              Requirements:
+              - Character must be running in a straight line towars the camera
+              - Character's front should always be facing the camera
+              - Both hands must be clearly visible during the running motion
+              - Background must be completely white
+              - Character should be appropriate for a mobile game (not too detailed, clear silhouette)
+              - The character should have a good running pose that shows movement
+              - Character should be centered in the frame
+              - Use a clean, game-appropriate art style
+              The character will be used to generate an animation sequence, so ensure the pose is dynamic and shows clear running motion from behind.
+          placement: cache/references/enemy-running.png
+          num_candidates: 1
+          size: 1024x1536
+          aspect_ratio: 900x1600
+          background: opaque
+          padding: 100
+          group: enemy
+          generation_method: normal
+    - bossRunning:
+          prompt: |
+              You are generating an evil enemy boss character for a game animation.
+              Create a character running towards the camera (front facing towards the camera) with a white background. The character should be suitable for a mobile game and should be viewed from front.
+              This is a enemy character found in the game of Level 2
+              Requirements:
+              - Character must be running in a straight line towards the camera
+              - Character's front should always be facing the camera
+              - Both hands must be clearly visible during the running motion
+              - Background must be completely white
+              - Character should be appropriate for a mobile game (not too detailed, clear silhouette)
+              - The character should have a good running pose that shows movement
+              - Character should be centered in the frame
+              - Use a clean, game-appropriate art style
+              - Make sure there is 10% margin between borders and the chracter centered
+              The character will be used to generate an animation sequence, so ensure the pose is dynamic and shows clear running motion from behind.
+          placement: cache/references/boss-running.png
+          num_candidates: 1
+          size: 1024x1536
+          aspect_ratio: 900x1600
+          background: opaque
+          padding: 100
+          group: boss
+          generation_method: normal
+animations:
+    - player:
+          direction: back
+          motion: running
+          use_few_shot: false
+          first_frame: false
+          placement: public/assets/player-atlas.png
+          reference: cache/references/character-running.png
+    - enemy:
+          direction: front
+          motion: running
+          use_few_shot: false
+          first_frame: false
+          placement: public/assets/enemy-atlas.png
+          reference: cache/references/enemy-running.png
+    - enemyBoss:
+          direction: front
+          motion: running
+          use_few_shot: false
+          first_frame: false
+          placement: public/assets/boss-atlas.png
+          reference: cache/references/boss-running.png
+

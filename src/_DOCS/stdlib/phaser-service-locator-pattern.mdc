@@ -1,0 +1,223 @@
+# Service Locator Pattern: Concise Guide
+
+```mermaid
+flowchart TD
+    subgraph "Setup Phase"
+        A[MainScene] -- instantiates --> B[ServiceRegistry];
+        B -- calls --> C[initializeServices];
+        C -- instantiates & registers --> D[Managers, e.g., TowerManager];
+        C -- instantiates & registers --> E[Systems, e.g., CombatSystem];
+        D -- is stored in --> F((ServiceLocator));
+        E -- is stored in --> F((ServiceLocator));
+    end
+
+    subgraph "Runtime Phase"
+        G[CombatSystem] -- needs a dependency --> H{ServiceLocator.get('towerManager')};
+        F -- provides instance --> H;
+        H -- returns instance to --> G;
+        G -- now has access to --> D;
+    end
+```
+
+## Core Principle
+
+Use a global Service Locator to decouple systems and manage dependencies, eliminating tight coupling between classes.
+
+## 1. The `ServiceLocator` Class
+
+A simple static class to register and retrieve services.
+
+```typescript
+// src/services/service-locator/service-locator.ts
+export default class ServiceLocator {
+    private static services: Map<string, unknown> = new Map();
+
+    public static register<T>(name: string, service: T): void {
+        if (this.services.has(name)) {
+            console.warn(`[ServiceLocator] Overwriting service: ${name}`);
+        }
+        this.services.set(name, service);
+    }
+
+    public static get<T>(name: string): T {
+        const service = this.services.get(name) as T;
+        if (!service) {
+            const available = Array.from(this.services.keys()).join(", ");
+            throw new Error(
+                `[ServiceLocator] Service "${name}" not found. Available: ${available}`
+            );
+        }
+        return service;
+    }
+
+    /** Clears all services. Call on scene shutdown/restart. */
+    public static cleanup(): void {
+        this.services.clear();
+    }
+
+    /** Lists all registered service names (useful for debugging) */
+    public static listServices(): string[] {
+        return Array.from(this.services.keys());
+    }
+}
+```
+
+## 2. Registration and Initialization
+
+Register all services at a single point when the game starts. Use a dedicated class for this.
+
+### Service Registry (`service-registry.service.ts`)
+
+```typescript
+// src/services/service-registry.service.ts
+import ServiceLocator from "./service-locator/service-locator";
+// Import all managers and systems
+import TowerManager from "../managers/tower.manager";
+import CombatSystem from "../systems/combat.system";
+
+export default class ServiceRegistry {
+    constructor(private scene: Phaser.Scene) {}
+
+    public initializeServices(): void {
+        // 1. Managers (data providers)
+        ServiceLocator.register("towerManager", new TowerManager(this.scene));
+
+        // 2. Systems (logic, depend on managers)
+        ServiceLocator.register("combatSystem", new CombatSystem(this.scene));
+
+        console.log(
+            `[ServiceRegistry] Initialized ${
+                ServiceLocator.listServices().length
+            } services.`
+        );
+    }
+
+    public cleanup(): void {
+        ServiceLocator.cleanup();
+    }
+}
+```
+
+### `MainScene` Integration
+
+```typescript
+// src/scenes/main.scene.ts
+import ServiceRegistry from "../services/service-registry.service";
+
+export default class MainScene extends Phaser.Scene {
+    private serviceRegistry!: ServiceRegistry;
+
+    create() {
+        // Initialize and register services FIRST
+        this.serviceRegistry = new ServiceRegistry(this);
+        this.serviceRegistry.initializeServices();
+
+        // Game setup can now use any service
+        this.setupGame();
+    }
+
+    shutdown() {
+        this.serviceRegistry.cleanup();
+    }
+}
+```
+
+## 3. Accessing Services
+
+Retrieve services anywhere using `ServiceLocator.get()`. Caching services in the constructor is recommended for performance.
+
+```typescript
+// src/systems/combat.system.ts
+import ServiceLocator from "../services/service-locator/service-locator";
+import TowerManager from "../managers/tower.manager";
+
+export default class CombatSystem {
+    private towerManager: TowerManager;
+
+    constructor(private scene: Phaser.Scene) {
+        // Cache frequently used services for performance
+        this.towerManager = ServiceLocator.get<TowerManager>("towerManager");
+    }
+
+    private processAttack(towerId: string, damage: number): void {
+        const tower = this.towerManager.getTower(towerId);
+        if (tower) {
+            tower.takeDamage(damage);
+        }
+    }
+}
+```
+
+## 4. Anti-Patterns (What to Avoid)
+
+### ❌ Service Locator in Entities
+
+Entities should be simple data objects. They **must not** access global services. Instead, they should emit events for systems to handle.
+
+```typescript
+// BAD: Entity accesses a service directly.
+export default class Tower extends Phaser.GameObjects.Sprite {
+    public takeDamage(damage: number): void {
+        // ❌ WRONG: An entity should not have knowledge of other systems.
+        const ui = ServiceLocator.get<UIManager>("uiManager");
+        ui.showDamageNumber(this.x, this.y, damage);
+    }
+}
+
+// GOOD: Entity emits an event.
+export default class Tower extends Phaser.GameObjects.Sprite {
+    public takeDamage(damage: number): void {
+        this.health -= damage;
+        // ✅ CORRECT: Emit an event. A system will listen and react.
+        this.scene.events.emit("tower-damaged", { towerId: this.id, damage });
+    }
+}
+```
+
+### ❌ Circular Dependencies
+
+A Manager should not depend on a System, as Systems typically depend on Managers. This creates a circular dependency. Use events to communicate from Managers back to Systems if needed.
+
+```typescript
+// BAD: A Manager depending on a System.
+export default class TowerManager {
+    constructor() {
+        // ❌ WRONG: This creates a circular dependency.
+        const combatSystem = ServiceLocator.get<CombatSystem>("combatSystem");
+    }
+}
+```
+
+## 5. Testing
+
+The primary benefit of this pattern is testability. You can easily provide mock services during tests.
+
+```typescript
+// tests/combat.system.test.ts
+import ServiceLocator from "../services/service-locator/service-locator";
+import { MockTowerManager } from "./mocks/MockTowerManager";
+
+describe("CombatSystem", () => {
+    beforeEach(() => {
+        // Clean up and register mock for this test.
+        ServiceLocator.cleanup();
+        ServiceLocator.register("towerManager", new MockTowerManager());
+    });
+
+    it("should correctly process an attack", () => {
+        const combatSystem = new CombatSystem(new MockScene());
+        // ... test logic using the mock towerManager.
+    });
+});
+```
+
+## Core Rules Summary
+
+1.  **Central Registration**: Register all services in a `ServiceRegistry` at startup.
+2.  **Correct Order**: Register services with no dependencies (e.g., Managers) before services that have dependencies (e.g., Systems).
+3.  **Type-Safe Access**: Always use `ServiceLocator.get<Type>('name')` to retrieve services.
+4.  **No Entities**: Entities **must not** use the Service Locator. They should only manage state and emit events.
+5.  **Testing**: Isolate systems for testing by providing mock services.
+
+**Violations will result in immediate refactoring requirements.**
+

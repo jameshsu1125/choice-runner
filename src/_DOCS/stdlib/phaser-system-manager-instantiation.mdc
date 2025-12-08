@@ -1,0 +1,182 @@
+# Rule: Safe Service Instantiation
+
+## The Golden Rule: Constructors Are For Storing Dependencies, NOT For Logic.
+
+To prevent race conditions, services **MUST NOT** perform logic, access other services, or set up event listeners in their `constructor`. This work **MUST** be done in a separate `initialize()` method.
+
+**Why?** When a `constructor` runs, there is no guarantee that other services have been created or registered in the `ServiceLocator`. Attempting to access them will cause unpredictable errors.
+
+### The Correct Lifecycle (Cheat Sheet)
+
+1.  **`new Service()`**: Constructor only saves scene/config. No other logic.
+2.  **`ServiceLocator.register()`**: The service is added to the locator.
+3.  **`ServiceLocator.get()`**: The service can now be retrieved by others.
+4.  **`service.initialize()`**: The service can now safely access other services and set up its logic.
+
+---
+
+## Rule 1: The `initialize()` Pattern (MANDATORY)
+
+Every System and Manager that needs setup logic MUST implement an `initialize()` method.
+
+### Constructor: What to Do (and Not Do)
+
+```typescript
+// ✅ CORRECT: A clean, safe constructor.
+export default class CombatSystem {
+    private scene: Phaser.Scene;
+    private towerManager!: TowerManager; // Type it, but don't assign it.
+    private isInitialized: boolean = false;
+
+    constructor(scene: Phaser.Scene) {
+        // ✅ DO: Store the scene reference.
+        this.scene = scene;
+
+        // ❌ DON'T: Access ServiceLocator.
+        // ❌ DON'T: Add event listeners.
+        // ❌ DON'T: Call complex setup methods.
+    }
+
+    // ... initialize method ...
+}
+```
+
+### `initialize()`: Where Logic Happens
+
+```typescript
+// ✅ CORRECT: All setup logic is in initialize().
+public initialize(): void {
+    if (this.isInitialized) return;
+
+    // ✅ NOW it's safe to get other services.
+    this.towerManager = ServiceLocator.get<TowerManager>("towerManager");
+
+    // ✅ NOW it's safe to listen to events.
+    onGameEvent(GameEvents.TOWER_ATTACK, this.processDamage.bind(this));
+
+    // ✅ NOW it's safe to run setup logic.
+    this.setupCombatRules();
+
+    this.isInitialized = true;
+}
+```
+
+---
+
+## Rule 2: The `ServiceRegistry` (MANDATORY)
+
+All services MUST be created and registered in a central `ServiceRegistry`.
+
+**Key Idea**: Register all Managers first, then all Systems. This ensures Systems can rely on Managers being available.
+
+```typescript
+// services/service-registry.ts
+export default class ServiceRegistry {
+    // ... constructor ...
+
+    public registerAllServices(): void {
+        // 1. MANAGERS FIRST: They provide data and have no dependencies.
+        this.registerManagers();
+
+        // 2. SYSTEMS SECOND: They contain logic and depend on Managers.
+        this.registerSystems();
+    }
+
+    private registerManagers(): void {
+        // Create and register each Manager.
+        ServiceLocator.register("towerManager", new TowerManager(this.scene));
+        ServiceLocator.register(
+            "projectileManager",
+            new ProjectileManager(this.scene)
+        );
+    }
+
+    private registerSystems(): void {
+        // Create and register each System.
+        ServiceLocator.register("combatSystem", new CombatSystem(this.scene));
+        ServiceLocator.register("towerSystem", new TowerSystem(this.scene));
+    }
+}
+```
+
+---
+
+## Rule 3: `MainScene` Integration (MANDATORY)
+
+The `MainScene` is responsible for orchestrating the registration and initialization of all services.
+
+### The `create()` Method Flow
+
+```typescript
+// scenes/MainScene.ts
+export default class MainScene extends Phaser.Scene {
+    create() {
+        // STEP 1: Register all services via the registry.
+        // This calls `new` on all services, but not `initialize`.
+        const serviceRegistry = new ServiceRegistry(this);
+        serviceRegistry.registerAllServices();
+
+        // STEP 2: Initialize all services.
+        // Now that all services are registered, they can safely be initialized.
+        this.initializeAllServices();
+
+        // STEP 3: Start the game.
+        this.setupGame();
+    }
+
+    private initializeAllServices(): void {
+        // Correct initialization order is important if services depend on each other's setup logic.
+
+        // Initialize Managers (if they have init logic)
+        ServiceLocator.get<TowerManager>("towerManager")?.initialize();
+
+        // Initialize Systems
+        ServiceLocator.get<CombatSystem>("combatSystem").initialize();
+        ServiceLocator.get<TowerSystem>("towerSystem").initialize();
+    }
+
+    shutdown() {
+        // Don't forget to clean up!
+        ServiceLocator.cleanup();
+    }
+}
+```
+
+---
+
+## Common Anti-Patterns (Forbidden)
+
+#### ❌ Service Access in Constructor
+
+```typescript
+// BAD: Accessing ServiceLocator in the constructor.
+class MySystem {
+    constructor() {
+        // RACE CONDITION! towerManager might not be registered yet.
+        const towerManager = ServiceLocator.get("towerManager");
+    }
+}
+```
+
+#### ❌ Inline Instantiation and Initialization
+
+```typescript
+// BAD: Creating and initializing services on-the-fly.
+class SomeOtherClass {
+    someMethod() {
+        const mySystem = new MySystem(this.scene);
+        // WRONG! Other services don't know this exists.
+        // It wasn't registered in the ServiceRegistry.
+        mySystem.initialize();
+    }
+}
+```
+
+By following this two-phase (construct -> initialize) pattern, you create a stable, predictable, and race-condition-free architecture.
+
+```
+
+This pattern ensures robust, race-condition-free initialization of all game services!
+
+```
+

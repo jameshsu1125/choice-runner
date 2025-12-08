@@ -1,0 +1,75 @@
+flowchart TD
+    A[Player Makes Move] --> B[GameBoardComponent.findMatches]
+    B --> C{Match >= 4 tiles?}
+    C -->|No| D[Regular Match Processing]
+    C -->|Yes| E[Emit LASER_TRIGGERED Event]
+    
+    E --> F[LaserSystem.handleLaserTrigger]
+    F --> G[LaserManager.createLaser]
+    G --> H[Calculate Center Position<br/>Math.floor avg of tile positions]
+    H --> H1[Calculate Cross Pattern from Center]
+    
+    H1 --> I[X-Axis Processing]
+    H1 --> J[Y-Axis Processing]
+    
+    I --> K[Find All Tiles in Center Row]
+    K --> L[Destroy Row Tiles]
+    L --> M[Generate Row Projectiles]
+    
+    J --> N[Find All Tiles in Center Column]
+    N --> O[Destroy Column Tiles]
+    O --> P[Generate Column Projectiles]
+    O --> Q[Check Tower Collision on Y-Axis]
+    
+    Q -->|Tower in Path| R[Apply 50 Direct Damage to Tower]
+    Q -->|No Tower| S[Skip Direct Damage]
+    
+    M --> T[Emit LASER_PROJECTILES_GENERATED]
+    P --> T
+    R --> U[Emit LASER_TOWER_HIT]
+    S --> T
+    U --> T
+    
+    T --> V[CombatSystem.processLaserProjectiles]
+    V --> W[VisualEffectsSystem.showLaserAnimation]
+    
+    W --> X[LaserComponent Visual Effects]
+    X --> Y[Cross Pattern Animation]
+    Y --> Z[Projectile Animations]
+    
+    Z --> AA[TurnSystem.continueTurnProcessing]
+    AA --> BB[GameBoard.dropAndRefill]
+    BB --> CC[Check for New Matches]
+    CC --> DD[Turn Complete]
+
+    subgraph "Laser System Architecture"
+        direction TB
+        LS[LaserSystem<br/>Business Logic] --> LM[LaserManager<br/>CRUD Operations]
+        LM --> LE[LaserEntity<br/>Data Model]
+        LE --> LC[LaserComponent<br/>Visual Representation]
+    end
+
+    subgraph "Event Flow"
+        direction LR
+        E1[LASER_TRIGGERED] --> E2[LASER_CROSS_PATTERN_ACTIVATED]
+        E2 --> E3[LASER_TILES_DESTROYED]
+        E3 --> E4[LASER_TOWER_HIT]
+        E4 --> E5[LASER_PROJECTILES_GENERATED]
+    end
+
+    subgraph "Center Position Algorithm"
+        direction TB
+        CP1[Sum all tile.gridR positions] --> CP2[Divide by tile count]
+        CP2 --> CP3[Math.floor for centerRow]
+        CP4[Sum all tile.gridC positions] --> CP5[Divide by tile count]
+        CP5 --> CP6[Math.floor for centerCol]
+        CP3 --> CP7[Laser Origin: centerRow, centerCol]
+        CP6 --> CP7
+    end
+
+    subgraph "Damage Calculation"
+        direction TB
+        DC1[Base Match Damage] --> DC2[+ Laser Bonus Damage]
+        DC2 --> DC3[+ Direct Tower Hit: 50]
+        DC3 --> DC4[Total Damage Output]
+    end 

@@ -1,0 +1,14 @@
+{
+  "player": {
+    "frameWidth": 128,
+    "frameHeight": 224
+  },
+  "enemy": {
+    "frameWidth": 127,
+    "frameHeight": 133
+  },
+  "enemyBoss": {
+    "frameWidth": 261,
+    "frameHeight": 176
+  }
+}

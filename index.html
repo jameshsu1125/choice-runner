@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Vite + TS</title>
+    </head>
+
+    <body style="margin: 0; padding: 0; background-color: #000">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            :root {
+                --background-icon-url: url("_ASSETS_/icon.png");
+            }
+        </style>
+        <link rel="stylesheet" href="_ASSETS_/loading-styles.css" />
+        <style>
+            @font-face {
+                font-family: "LTMuseum-Light";
+                src: url("_ASSETS_/fonts/LTMuseum-Light.ttf") format("truetype");
+                font-weight: normal;
+                font-style: normal;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #000;
+            }
+        </style>
+        <!-- Loading Screen block start -->
+        <div id="background-container">
+            <div class="background-blur"></div>
+        </div>
+        <div id="loading-container">
+            <div class="loading-content">
+                <img class="icon" src="_ASSETS_/icon.png" />
+                <div class="game-title">Appier</div>
+                <div class="progress-outer">
+                    <div class="progress-track"></div>
+                    <div class="progress-inner"></div>
+                </div>
+                <img class="appier-logo" src="_ASSETS_/appier-logo.svg" />
+            </div>
+        </div>
+        <!-- Loading Screen block end -->
+        <div id="app" style="background-color: #000"></div>
+
+        <script>
+            let isSentSSPClickBeacon = false;
+            const SSP_CLICK_BEACON = "${SSP_CLICK_BEACON}";
+            const APPIER_CLICK_URL = "${APPIER_CLICK_URL}";
+            window.appierOpen = () => {
+                if (!isSentSSPClickBeacon) {
+                    fetch(SSP_CLICK_BEACON, { keepalive: true, mode: "no-cors" });
+                    isSentSSPClickBeacon = true;
+                }
+                try {
+                    window.mraid.open(APPIER_CLICK_URL);
+                } catch (e) {
+                    console.error("Failed to open with MRAID", e.message);
+                    window.open(APPIER_CLICK_URL, "_blank");
+                }
+            };
+        </script>
+
+        ${beacon1}
+
+        <script id="phaser-custom-build"></script>
+        <script type="module" src="/src/index.ts"></script>
+    </body>
+</html>
+
