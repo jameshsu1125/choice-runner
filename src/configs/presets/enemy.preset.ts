@@ -41,17 +41,22 @@ const boss: TBlood = {
 };
 
 export const enemyEntityConfig: TEnemyPresetConfig[] = [
-  ...new Array(29 * 2).keys(),
-].map(() => {
-  return {
-    time: 0 + Math.floor(Math.random() * 30000),
-    data: {
-      x: Math.random() * 400,
-      type: Math.random() > 0.5 ? "follow" : "straight",
-      blood: practiceEnemy,
-    },
-  };
-});
+  ...[...new Array(29 * 2).keys()].map(() => {
+    return {
+      time: 0 + Math.floor(Math.random() * 29999),
+      data: {
+        x: Math.random() * 400,
+        type:
+          Math.random() > 0.5
+            ? "follow"
+            : ("straight" as "follow" | "straight"),
+        blood: smallEnemy,
+      },
+    };
+  }),
+  { time: 30000, data: { x: 220, type: "follow", blood: boss } },
+];
+
 // [
 //   { time: 2000, data: { x: 200, type: "follow", blood: smallEnemy } },
 //   { time: 3500, data: { x: 100, type: "follow", blood: smallEnemy } },
@@ -85,7 +90,7 @@ export const enemyEntityConfig: TEnemyPresetConfig[] = [
 // ];
 
 export const enemyEntityPresetConfig: TEnemyPresetConfig[] = [
-  ...new Array(20).keys(),
+  ...new Array(6).keys(),
 ].map(() => {
   return {
     time: -8000 + Math.floor(Math.random() * 7999),

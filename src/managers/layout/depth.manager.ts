@@ -4,7 +4,10 @@ import {
   enemyEntityPresetConfig,
 } from "../../configs/presets/enemy.preset";
 import { finishLineEntityConfig } from "../../configs/presets/finishLne.preset";
-import { gateEntityPresetConfig } from "../../configs/presets/gate.preset";
+import {
+  gateEntityConfig,
+  gateEntityPresetConfig,
+} from "../../configs/presets/gate.preset";
 import {
   supplementEntityConfig,
   supplementEntityPresetConfig,
@@ -54,6 +57,9 @@ export const getDepthByOptions = (
     }
   }
 
+  // entity item move distance by time.
+  // offset time is to correct visual discrepancies
+  // range about half height of image
   const supplementOffsetTime = -500;
   const fateOffsetTime = -400;
 
@@ -64,11 +70,6 @@ export const getDepthByOptions = (
     })
   );
 
-  const offsetSupplement = [...supplementEntityConfig].map((cfg) => ({
-    ...cfg,
-    time: cfg.time - supplementOffsetTime,
-  }));
-
   const offsetPresetGate = [...gateEntityPresetConfig].map((cfg) => ({
     ...cfg,
     time: cfg.time - fateOffsetTime,
@@ -77,9 +78,10 @@ export const getDepthByOptions = (
   const sortedPresetConfig = [
     ...enemyEntityPresetConfig,
     ...finishLineEntityConfig,
+    ...gateEntityConfig,
+    ...supplementEntityConfig,
     ...offsetPresetGate,
     ...offsetPresetSupplement,
-    ...offsetSupplement,
   ]
     .sort((a, b) => b.time - a.time)
     .map((cfg, index) => ({ ...cfg, index }));
