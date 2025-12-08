@@ -11,7 +11,7 @@ export const hitGateEffect = (object: Sprite, invalid: boolean) => {
   const originalScaleX = object.scaleX;
   const originalScaleY = object.scaleY;
 
-  const currentColor = invalid ? 0x00ffff : 0xffffff; // Red for invalid, Green for valid
+  const currentColor = invalid ? 0x00ffff : 0xffffff; // Cyan for invalid, White for valid
 
   const holdDuration = 10; // Duration to hold the white flash effect
 
