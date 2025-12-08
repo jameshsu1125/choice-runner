@@ -56,9 +56,7 @@ export class SupplementComponent extends Container {
     time: number,
     config: (typeof supplementEntityConfig)[number]
   ): void {
-    [...config.data].forEach((cfg) => {
-      this.createSupplement(cfg, time);
-    });
+    this.createSupplement(config.data, time);
   }
 
   private createSupplement(config: TConfig, time: number): void {

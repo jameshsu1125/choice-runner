@@ -61,6 +61,11 @@ export default class GateWithCounterComponent extends Container {
     this.setDepth((this.scene as MainScene).getIndex());
   }
 
+  public setDepths(depth: number): void {
+    this.gate?.setDepth(depth);
+    this.text?.setDepth(depth);
+  }
+
   private createGate(): void {
     const { ratio } = gatePreset;
     this.gate = this.scene.physics.add.staticSprite(
@@ -82,7 +87,6 @@ export default class GateWithCounterComponent extends Container {
     );
 
     this.defaultScale = this.gate.scale;
-    this.add(this.gate);
   }
 
   private createText(): void {
@@ -97,7 +101,6 @@ export default class GateWithCounterComponent extends Container {
       }
     );
     this.text.setOrigin(0.5, 0.5);
-    this.add(this.text);
   }
 
   private build(): void {

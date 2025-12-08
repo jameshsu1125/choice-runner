@@ -41,45 +41,57 @@ const boss: TBlood = {
 };
 
 export const enemyEntityConfig: TEnemyPresetConfig[] = [
-  { time: 2000, data: { x: 200, type: "follow", blood: smallEnemy } },
-  { time: 3500, data: { x: 100, type: "follow", blood: smallEnemy } },
-  { time: 4500, data: { x: 180, type: "follow", blood: smallEnemy } },
-  { time: 5500, data: { x: 300, type: "follow", blood: smallEnemy } },
-  { time: 7500, data: { x: 100, type: "follow", blood: smallEnemy } },
-  { time: 8500, data: { x: 300, type: "follow", blood: smallEnemy } },
-  { time: 9000, data: { x: 100, type: "follow", blood: smallEnemy } },
-  { time: 12300, data: { x: 60, type: "follow", blood: smallEnemy } },
-  { time: 12300, data: { x: 240, type: "follow", blood: smallEnemy } },
-  { time: 13800, data: { x: 140, type: "follow", blood: smallEnemy } },
-  { time: 14300, data: { x: 300, type: "follow", blood: smallEnemy } },
-  { time: 15300, data: { x: 180, type: "follow", blood: smallEnemy } },
-  { time: 16000, data: { x: 100, type: "follow", blood: smallEnemy } },
-  { time: 16000, data: { x: 300, type: "follow", blood: smallEnemy } },
-  { time: 17500, data: { x: 220, type: "follow", blood: smallEnemy } },
-  { time: 18300, data: { x: 200, type: "follow", blood: smallEnemy } },
-  { time: 19900, data: { x: 80, type: "follow", blood: smallEnemy } },
-  { time: 19700, data: { x: 280, type: "follow", blood: smallEnemy } },
-  { time: 21900, data: { x: 220, type: "follow", blood: smallEnemy } },
-  { time: 23900, data: { x: 100, type: "follow", blood: smallEnemy } },
-  { time: 23900, data: { x: 280, type: "follow", blood: smallEnemy } },
-  { time: 24800, data: { x: 300, type: "follow", blood: smallEnemy } },
-  { time: 26800, data: { x: 220, type: "follow", blood: smallEnemy } },
-  { time: 27400, data: { x: 280, type: "follow", blood: smallEnemy } },
-  { time: 28000, data: { x: 80, type: "follow", blood: smallEnemy } },
-  { time: 28000, data: { x: 240, type: "follow", blood: smallEnemy } },
-  { time: 28800, data: { x: 200, type: "follow", blood: smallEnemy } },
-  { time: 29400, data: { x: 136, type: "follow", blood: smallEnemy } },
-  { time: 30000, data: { x: 220, type: "follow", blood: boss } },
-];
+  ...new Array(29 * 2).keys(),
+].map(() => {
+  return {
+    time: 0 + Math.floor(Math.random() * 30000),
+    data: {
+      x: Math.random() * 400,
+      type: Math.random() > 0.5 ? "follow" : "straight",
+      blood: practiceEnemy,
+    },
+  };
+});
+// [
+//   { time: 2000, data: { x: 200, type: "follow", blood: smallEnemy } },
+//   { time: 3500, data: { x: 100, type: "follow", blood: smallEnemy } },
+//   { time: 4500, data: { x: 180, type: "follow", blood: smallEnemy } },
+//   { time: 5500, data: { x: 300, type: "follow", blood: smallEnemy } },
+//   { time: 7500, data: { x: 100, type: "follow", blood: smallEnemy } },
+//   { time: 8500, data: { x: 300, type: "follow", blood: smallEnemy } },
+//   { time: 9000, data: { x: 100, type: "follow", blood: smallEnemy } },
+//   { time: 12300, data: { x: 60, type: "follow", blood: smallEnemy } },
+//   { time: 12300, data: { x: 240, type: "follow", blood: smallEnemy } },
+//   { time: 13800, data: { x: 140, type: "follow", blood: smallEnemy } },
+//   { time: 14300, data: { x: 300, type: "follow", blood: smallEnemy } },
+//   { time: 15300, data: { x: 180, type: "follow", blood: smallEnemy } },
+//   { time: 16000, data: { x: 100, type: "follow", blood: smallEnemy } },
+//   { time: 16000, data: { x: 300, type: "follow", blood: smallEnemy } },
+//   { time: 17500, data: { x: 220, type: "follow", blood: smallEnemy } },
+//   { time: 18300, data: { x: 200, type: "follow", blood: smallEnemy } },
+//   { time: 19900, data: { x: 80, type: "follow", blood: smallEnemy } },
+//   { time: 19700, data: { x: 280, type: "follow", blood: smallEnemy } },
+//   { time: 21900, data: { x: 220, type: "follow", blood: smallEnemy } },
+//   { time: 23900, data: { x: 100, type: "follow", blood: smallEnemy } },
+//   { time: 23900, data: { x: 280, type: "follow", blood: smallEnemy } },
+//   { time: 24800, data: { x: 300, type: "follow", blood: smallEnemy } },
+//   { time: 26800, data: { x: 220, type: "follow", blood: smallEnemy } },
+//   { time: 27400, data: { x: 280, type: "follow", blood: smallEnemy } },
+//   { time: 28000, data: { x: 80, type: "follow", blood: smallEnemy } },
+//   { time: 28000, data: { x: 240, type: "follow", blood: smallEnemy } },
+//   { time: 28800, data: { x: 200, type: "follow", blood: smallEnemy } },
+//   { time: 29400, data: { x: 136, type: "follow", blood: smallEnemy } },
+//   { time: 30000, data: { x: 220, type: "follow", blood: boss } },
+// ];
 
 export const enemyEntityPresetConfig: TEnemyPresetConfig[] = [
-  ...new Array(12).keys(),
+  ...new Array(20).keys(),
 ].map(() => {
   return {
     time: -8000 + Math.floor(Math.random() * 7999),
     data: {
       x: Math.random() * 400,
-      type: "follow",
+      type: Math.random() > 0.5 ? "follow" : "straight",
       blood: practiceEnemy,
     },
   };

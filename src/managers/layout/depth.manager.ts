@@ -39,41 +39,57 @@ export const getDepthByOptions = (
     | "end",
   time?: number
 ) => {
-  if (time === undefined || time > 0) {
+  if (type === "end" || type === "firepower") {
     switch (type) {
       case "end":
         return depthState.end++;
 
+      default:
       case "firepower":
         return depthState.firepower++;
-
-      case "character":
-      case "supplement":
-      case "gate":
-      case "finishLine":
-      default:
-        return depthState.character++;
     }
   }
 
-  const offsetTime = -500;
+  const supplementOffsetTime = -500;
+  const fateOffsetTime = -400;
 
-  const offsetSupplement = [...supplementEntityPresetConfig].map((cfg) => ({
+  const offsetPresetSupplement = [...supplementEntityPresetConfig].map(
+    (cfg) => ({
+      ...cfg,
+      time: cfg.time - supplementOffsetTime,
+    })
+  );
+
+  const offsetSupplement = [...supplementEntityConfig].map((cfg) => ({
     ...cfg,
-    time: cfg.time - offsetTime,
+    time: cfg.time - supplementOffsetTime,
   }));
 
-  const sortedPresetConfig = [...enemyEntityPresetConfig, ...offsetSupplement]
+  const offsetPresetGate = [...gateEntityPresetConfig].map((cfg) => ({
+    ...cfg,
+    time: cfg.time - fateOffsetTime,
+  }));
+
+  const sortedPresetConfig = [
+    ...enemyEntityPresetConfig,
+    ...finishLineEntityConfig,
+    ...offsetPresetGate,
+    ...offsetPresetSupplement,
+    ...offsetSupplement,
+  ]
     .sort((a, b) => b.time - a.time)
     .map((cfg, index) => ({ ...cfg, index }));
+
   depthState.character += 1;
 
-  return (
-    sortedPresetConfig.filter((cfg) => {
-      if (cfg.data.type === "ARMY" || cfg.data.type === "GUN") {
-        return cfg.time + offsetTime === time;
-      }
-      return cfg.time === time;
-    })[0].index || depthState.character
-  );
+  const resultConfig = sortedPresetConfig.filter((cfg) => {
+    if (cfg.data.type === "ARMY" || cfg.data.type === "GUN") {
+      return cfg.time + supplementOffsetTime === time;
+    }
+    if (cfg.data.type === "gate") {
+      return cfg.time + fateOffsetTime === time;
+    }
+    return cfg.time === time;
+  });
+  return resultConfig[0]?.index || depthState.character;
 };

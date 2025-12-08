@@ -2,19 +2,19 @@ import { TQuadrant } from "../constants/constants";
 
 export const supplementEntityConfig: {
   time: number;
-  data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" }[];
+  data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" };
 }[] = [
   {
     time: 5000,
-    data: [{ quadrant: 0, count: 10, type: "ARMY" }],
+    data: { quadrant: 0, count: 10, type: "ARMY" },
   },
   {
     time: 15000,
-    data: [{ quadrant: 1, count: 15, type: "ARMY" }],
+    data: { quadrant: 1, count: 15, type: "ARMY" },
   },
   {
     time: 25000,
-    data: [{ quadrant: -1, count: 20, type: "ARMY" }],
+    data: { quadrant: -1, count: 20, type: "ARMY" },
   },
 ];
 

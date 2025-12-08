@@ -78,8 +78,6 @@ export default class SupplementWithCounterComponent extends Container {
   }
 
   public setDepths(depth: number): void {
-    console.log("su", depth);
-
     this.bucket?.setDepth(depth);
     this.text?.setDepth(depth);
     this.item?.setDepth(depth);
