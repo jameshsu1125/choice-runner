@@ -15,14 +15,16 @@ export const hitGateEffect = (object: Sprite, invalid: boolean) => {
 
   const holdDuration = 10; // Duration to hold the white flash effect
 
+  if (scene.tweens.isTweening(object)) return;
+
   scene.tweens.add({
     targets: object,
-    scaleX: originalScaleX * 1.05, // 5% scale up
-    scaleY: originalScaleY * 1.05,
-    duration: 10,
+    scaleX: originalScaleX * 1.2, // 20% scale up
+    scaleY: originalScaleY * 1.2,
+    duration: 50,
     hold: holdDuration,
     yoyo: true,
-    ease: "Power2",
+    ease: "easeOutQuart",
     onStart: () => {
       object.setTintFill(currentColor); // White flash
     },
@@ -39,14 +41,14 @@ export const getGateReward = (object: Sprite, graphicsName: string) => {
     currentY,
     graphicsName,
     {
-      // 將角度限制在上方 90 度的範圍內 (270度為正上方)
+      // Limit the angle to a 90-degree range upward (270 degrees is straight up)
       angle: { min: 225, max: 315 },
-      speed: { min: 50, max: 300 }, // 粒子移動速度範圍
-      scale: { start: 0.8, end: 0 }, // 粒子大小，從 0.8 倍漸變到 0
-      alpha: { start: 1, end: 0 }, // 粒子透明度，從 1 漸變到 0 (淡出)
-      lifespan: 800, // 粒子生命週期 (毫秒)
-      quantity: 30, // 一次爆發的粒子總數
-      blendMode: "ADD", // 混合模式設為 'ADD'，讓粒子重疊時更亮，產生發光感
+      speed: { min: 50, max: 300 }, // Particle movement speed range
+      scale: { start: 0.8, end: 0 }, // Particle size, gradually scales from 0.8 to 0
+      alpha: { start: 1, end: 0 }, // Particle opacity, gradually fades from 1 to 0 (fade out)
+      lifespan: 800, // Particle lifespan (milliseconds)
+      quantity: 30, // Total number of particles per burst
+      blendMode: "ADD", // Blend mode set to 'ADD' for brighter overlapping particles, creating a glow effect
     }
   );
 
