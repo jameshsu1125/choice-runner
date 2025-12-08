@@ -36,13 +36,17 @@ export const getDepthByOptions = (
     | "gate"
     | "supplement"
     | "finishLine"
-    | "end",
+    | "end"
+    | "player",
   time?: number
 ) => {
-  if (type === "end" || type === "firepower") {
+  if (type === "end" || type === "firepower" || type === "player") {
     switch (type) {
       case "end":
         return depthState.end++;
+
+      case "player":
+        return depthState.player++;
 
       default:
       case "firepower":
