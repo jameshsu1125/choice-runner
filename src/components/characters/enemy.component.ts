@@ -44,8 +44,6 @@ export class EnemyComponent extends Container {
     this.enemyState.forEach((state) => {
       const percent = (0 - state.startTime) / duration;
       const { target } = state;
-      console.log(percent);
-
       target.setPositionByPercentage(percent);
       target.enemy?.refreshBody();
     });

@@ -13,6 +13,15 @@ import {
   supplementEntityPresetConfig,
 } from "../../configs/presets/supplement.preset";
 
+type DepthType =
+  | "character"
+  | "firepower"
+  | "gate"
+  | "supplement"
+  | "finishLine"
+  | "end"
+  | "player";
+
 const totalDepth =
   enemyEntityPresetConfig.length +
   enemyEntityConfig.length +
@@ -22,6 +31,7 @@ const totalDepth =
   finishLineEntityConfig.length; // number should > all character total count
 
 const depthState = {
+  finishLine: 1,
   character: totalDepth, // -= 1
   firepower: totalDepth, // += 1
   blood: totalDepth + 1000, // number should > firepower count,
@@ -29,19 +39,17 @@ const depthState = {
   end: totalDepth * 2 + 1000 + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max,
 };
 
-export const getDepthByOptions = (
-  type:
-    | "character"
-    | "firepower"
-    | "gate"
-    | "supplement"
-    | "finishLine"
-    | "end"
-    | "player",
-  time?: number
-) => {
-  if (type === "end" || type === "firepower" || type === "player") {
+export const getDepthByOptions = (type: DepthType, time?: number) => {
+  if (
+    type === "end" ||
+    type === "firepower" ||
+    type === "player" ||
+    type === "finishLine"
+  ) {
     switch (type) {
+      case "finishLine":
+        return depthState.finishLine;
+
       case "end":
         return depthState.end++;
 
