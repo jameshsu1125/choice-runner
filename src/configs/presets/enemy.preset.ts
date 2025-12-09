@@ -1,3 +1,5 @@
+import { randomRange } from "../../utils/misc.utils";
+
 type TBlood = {
   type: "ghost" | "boss";
   max: number;
@@ -41,7 +43,7 @@ const boss: TBlood = {
 };
 
 export const enemyEntityConfig: TEnemyPresetConfig[] = [
-  ...[...new Array(29).keys()].map(() => {
+  ...randomRange(0, 29999, 58).map(() => {
     return {
       time: 0 + Math.floor(Math.random() * 29999),
       data: {
@@ -89,11 +91,13 @@ export const enemyEntityConfig: TEnemyPresetConfig[] = [
 //   { time: 30000, data: { x: 220, type: "follow", blood: boss } },
 // ];
 
-export const enemyEntityPresetConfig: TEnemyPresetConfig[] = [
-  ...new Array(6).keys(),
-].map(() => {
+export const enemyEntityPresetConfig: TEnemyPresetConfig[] = randomRange(
+  -7000,
+  0,
+  6
+).map((time) => {
   return {
-    time: -8000 + Math.floor(Math.random() * 7999),
+    time,
     data: {
       x: Math.random() * 400,
       type: Math.random() > 0.5 ? "follow" : "straight",

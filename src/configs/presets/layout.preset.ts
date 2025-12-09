@@ -66,7 +66,6 @@ export const enemyPreset = {
     ghost: 100 / 320,
   },
   randomWidth: 400,
-  timeOffset: 570,
   get duration() {
     return GAME_MECHANIC_CONSTANTS.enemySpeed;
   },

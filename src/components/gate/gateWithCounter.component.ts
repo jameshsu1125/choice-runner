@@ -58,7 +58,6 @@ export default class GateWithCounterComponent extends Container {
 
     this.num = config.count;
     this.build();
-    this.setDepth((this.scene as MainScene).getIndex());
   }
 
   public setDepths(depth: number): void {
@@ -227,7 +226,7 @@ export default class GateWithCounterComponent extends Container {
     text.setScale(currentScale, currentScale);
 
     const x = this.scene.scale.width / 2 + this.quadrant * gate.displayWidth;
-    const y = (this.scene.scale.height + gate.displayHeight) * easingPercentage;
+    const y = this.scene.scale.height * easingPercentage;
     this.setPxy(x, y);
 
     const missPositionY =

@@ -402,7 +402,7 @@ export default class EnemyWithCounterComponent extends Container {
             ? 0.5 * currentPercent
             : -0.5 * currentPercent);
 
-    const y = (this.scene.scale.height + enemy.displayHeight) * currentPercent;
+    const y = this.scene.scale.height * currentPercent;
 
     this.setPxy(x, y);
     this.update();

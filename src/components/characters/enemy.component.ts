@@ -44,6 +44,8 @@ export class EnemyComponent extends Container {
     this.enemyState.forEach((state) => {
       const percent = (0 - state.startTime) / duration;
       const { target } = state;
+      console.log(percent);
+
       target.setPositionByPercentage(percent);
       target.enemy?.refreshBody();
     });
@@ -99,9 +101,9 @@ export class EnemyComponent extends Container {
   }
 
   public update(time: number): void {
-    const { timeOffset, duration } = enemyPreset;
+    const { duration } = enemyPreset;
     this.enemyState.forEach((state) => {
-      const percent = (time - state.startTime + timeOffset) / duration;
+      const percent = (time - state.startTime) / duration;
       const { target } = state;
       target.setPositionByPercentage(percent);
     });
@@ -112,16 +114,13 @@ export class EnemyComponent extends Container {
     oldDuration: number,
     newDuration: number
   ): void {
-    const { timeOffset } = enemyPreset;
-
     // Recalculate startTime for each enemy to maintain their current position
     this.enemyState.forEach((state) => {
       // Calculate current position percentage with old duration
-      const currentPercent =
-        (currentTime - state.startTime + timeOffset) / oldDuration;
+      const currentPercent = (currentTime - state.startTime) / oldDuration;
 
       // Calculate new startTime to maintain the same percentage with new duration
-      state.startTime = currentTime + timeOffset - currentPercent * newDuration;
+      state.startTime = currentTime - currentPercent * newDuration;
     });
   }
 

@@ -13,7 +13,7 @@ import {
   supplementEntityPresetConfig,
 } from "../../configs/presets/supplement.preset";
 
-const firepowerDepthStart =
+const totalDepth =
   enemyEntityPresetConfig.length +
   enemyEntityConfig.length +
   gateEntityPresetConfig.length +
@@ -22,14 +22,11 @@ const firepowerDepthStart =
   finishLineEntityConfig.length; // number should > all character total count
 
 const depthState = {
-  character: 1,
-  firepower: firepowerDepthStart, // number should > all character total count
-  blood: firepowerDepthStart + 1000, // number should > firepower count,
-  player: firepowerDepthStart * 2 + 1000, // all character total count + blood count + firepower count
-  end:
-    firepowerDepthStart * 2 +
-    1000 +
-    GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max,
+  character: totalDepth, // -= 1
+  firepower: totalDepth, // += 1
+  blood: totalDepth + 1000, // number should > firepower count,
+  player: totalDepth * 2 + 1000, // all character total count + blood count + firepower count
+  end: totalDepth * 2 + 1000 + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max,
 };
 
 export const getDepthByOptions = (
@@ -57,55 +54,20 @@ export const getDepthByOptions = (
     }
   }
 
-  // entity item move distance by time.
-  // offset time is to correct visual discrepancies
-  // range about half height of image
-  const supplementOffsetTime = -500;
-  const fateOffsetTime = -400;
-
-  const offsetPresetSupplement = [...supplementEntityPresetConfig].map(
-    (cfg) => ({
-      ...cfg,
-      time: cfg.time - supplementOffsetTime,
-    })
-  );
-
-  const offsetSupplement = [...supplementEntityConfig].map((cfg) => ({
-    ...cfg,
-    time: cfg.time - supplementOffsetTime,
-  }));
-
-  const offsetPresetGate = [...gateEntityPresetConfig].map((cfg) => ({
-    ...cfg,
-    time: cfg.time - fateOffsetTime,
-  }));
-
-  const offsetGate = [...gateEntityConfig].map((cfg) => ({
-    ...cfg,
-    time: cfg.time - fateOffsetTime,
-  }));
-
   const sortedPresetConfig = [
     ...enemyEntityPresetConfig,
+    ...enemyEntityConfig,
     ...finishLineEntityConfig,
-    ...offsetPresetGate,
-    ...offsetGate,
-    ...offsetPresetSupplement,
-    ...offsetSupplement,
+    ...gateEntityPresetConfig,
+    ...gateEntityConfig,
+    ...supplementEntityPresetConfig,
+    ...supplementEntityConfig,
   ]
     .sort((a, b) => b.time - a.time)
     .map((cfg, index) => ({ ...cfg, index }));
 
-  depthState.character += 1;
+  depthState.character -= 1;
 
-  const resultConfig = sortedPresetConfig.filter((cfg) => {
-    if (cfg.data.type === "ARMY" || cfg.data.type === "GUN") {
-      return cfg.time + supplementOffsetTime === time;
-    }
-    if (cfg.data.type === "gate") {
-      return cfg.time + fateOffsetTime === time;
-    }
-    return cfg.time === time;
-  });
+  const resultConfig = sortedPresetConfig.filter((cfg) => cfg.time === time);
   return resultConfig[0]?.index || depthState.character;
 };

@@ -28,7 +28,7 @@ export const GAME_MECHANIC_CONFIG_SCHEMA: GameMechanicConfigSchema = {
     default: 13986, // Default duration (lower = faster movement)
   },
   stopCollision: {
-    default: false,
+    default: true,
   },
   usePlayerAtlas: {
     default: true, // Set to false to use single player.png image instead of atlas

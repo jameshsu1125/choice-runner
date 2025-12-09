@@ -182,7 +182,7 @@ export default class PlayerWidthCounterComponent extends Container {
 
     this.player = player;
     this.player.setDepth(this.currentDepth! + this.depth);
-    this.addCollider(player);
+    // this.addCollider(player);
   }
 
   public stopAnimationSheet(): void {
