@@ -70,7 +70,17 @@ export const getDepthByOptions = (
     })
   );
 
+  const offsetSupplement = [...supplementEntityConfig].map((cfg) => ({
+    ...cfg,
+    time: cfg.time - supplementOffsetTime,
+  }));
+
   const offsetPresetGate = [...gateEntityPresetConfig].map((cfg) => ({
+    ...cfg,
+    time: cfg.time - fateOffsetTime,
+  }));
+
+  const offsetGate = [...gateEntityConfig].map((cfg) => ({
     ...cfg,
     time: cfg.time - fateOffsetTime,
   }));
@@ -78,10 +88,10 @@ export const getDepthByOptions = (
   const sortedPresetConfig = [
     ...enemyEntityPresetConfig,
     ...finishLineEntityConfig,
-    ...gateEntityConfig,
-    ...supplementEntityConfig,
     ...offsetPresetGate,
+    ...offsetGate,
     ...offsetPresetSupplement,
+    ...offsetSupplement,
   ]
     .sort((a, b) => b.time - a.time)
     .map((cfg, index) => ({ ...cfg, index }));

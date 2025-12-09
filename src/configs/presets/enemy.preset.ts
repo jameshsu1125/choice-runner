@@ -28,8 +28,8 @@ const practiceEnemy: TBlood = {
 
 const smallEnemy: TBlood = {
   type: "ghost",
-  max: 400,
-  value: 400,
+  max: 200,
+  value: 200,
   color: 0x7055b7,
 };
 
@@ -41,7 +41,7 @@ const boss: TBlood = {
 };
 
 export const enemyEntityConfig: TEnemyPresetConfig[] = [
-  ...[...new Array(29 * 2).keys()].map(() => {
+  ...[...new Array(29).keys()].map(() => {
     return {
       time: 0 + Math.floor(Math.random() * 29999),
       data: {
