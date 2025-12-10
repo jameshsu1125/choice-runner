@@ -105,28 +105,52 @@ export default class SupplementWithCounterComponent extends Container {
 
   private createBucket(): void {
     const { ratio } = supplementPreset;
-    this.bucket = this.scene.physics.add.staticSprite(
-      0,
-      -this.scene.scale.height,
-      "supplement-shipment"
-    );
-    this.bucket.setName(this.supplementName);
 
-    const { width, height } = getSize(this.bucket, ratio);
-    this.bucket.setDisplaySize(width, height);
+    // this.bucket = this.scene.physics.add.sprite(0, 0, "supplementSprite");
+    // this.bucket.setName(this.supplementName);
 
-    this.defaultScale = this.bucket.scale;
+    // const { width, height } = getSize(this.bucket, ratio);
+    // this.bucket.setDisplaySize(width, height);
+    // this.defaultScale = this.bucket.scale;
 
+    if (GAME_MECHANIC_CONSTANTS.useSupplementAtlas) {
+      // Use atlas with animation
+      this.bucket = this.scene.physics.add.sprite(0, 0, "supplementSheet");
+      this.bucket.setName(this.supplementName);
+
+      const { width, height } = getSize(this.bucket, ratio);
+      this.bucket.setDisplaySize(width, height);
+      this.defaultScale = this.bucket.scale;
+
+      this.bucket.anims.create({
+        key: "rolling",
+        frames: this.scene.anims.generateFrameNames("supplementSheet", {
+          prefix: "",
+          start: 0,
+          end: 11,
+          zeroPad: 3,
+        }),
+        frameRate: 9,
+        repeat: -1,
+      });
+    } else {
+      // Use single sprite image
+      this.bucket = this.scene.physics.add.sprite(0, 0, "supplementSprite");
+      const { width, height } = getSize(this.bucket, ratio);
+      this.bucket.setName(this.supplementName);
+      this.bucket.setDisplaySize(width, height);
+    }
     if (GAME_MECHANIC_CONSTANTS.stopCollision) this.addCollision(this.bucket);
   }
 
   private createText(): void {
     const { fontStyle } = supplementPreset;
     const { x, y } = this.bucket || { x: 0, y: 0 };
+
     this.text = this.scene.add.text(x, y, `${this.num}`, {
       ...fontStyle,
       fixedHeight: this.bucket?.displayHeight,
-      fixedWidth: this.bucket!.displayWidth,
+      fixedWidth: this.bucket?.displayWidth,
     });
     this.text.setOrigin(0.5, 0.5);
   }

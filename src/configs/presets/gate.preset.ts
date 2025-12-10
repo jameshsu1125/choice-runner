@@ -45,7 +45,7 @@ export const gateEntityConfig: {
 export const gateEntityPresetConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
-}[] = randomRange(-8000, 0, 2).map((time) => {
+}[] = randomRange(-8000, 0, 0).map((time) => {
   return {
     time,
     data: {

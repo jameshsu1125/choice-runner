@@ -94,7 +94,7 @@ export const enemyEntityConfig: TEnemyPresetConfig[] = [
 export const enemyEntityPresetConfig: TEnemyPresetConfig[] = randomRange(
   -7000,
   0,
-  6
+  0
 ).map((time) => {
   return {
     time,

@@ -110,17 +110,17 @@ export const supplementPreset = {
   item: {
     gun: {
       ratio: 54 / 320,
-      offsetY: 20,
+      offsetY: 80,
       originY: 68 / 78, // 68 is image scale center, 78 is image height
     },
     arm: {
       ratio: 30 / 320,
-      offsetY: 20,
+      offsetY: 80,
       originY: 108 / 118, // 108 is image scale center, 118 is image height
     },
   },
   fontStyle: {
-    fontSize: "44px",
+    fontSize: "144px",
     color: "#ffffff",
     fontFamily: "monospace",
     align: "center",
@@ -128,7 +128,7 @@ export const supplementPreset = {
     fixedHeight: 200,
     // backgroundColor: "#000000", // use background color adjustment padding top
     padding: {
-      top: 230,
+      top: 180,
     },
   },
 };

@@ -10,6 +10,7 @@ type GameMechanicConfigSchema = {
   usePlayerAtlas: BooleanSchema;
   useEnemyAtlas: BooleanSchema;
   useBossAtlas: BooleanSchema;
+  useSupplementAtlas: BooleanSchema;
   useFullscreenVictory: BooleanSchema;
   useFullscreenDefeat: BooleanSchema;
   showCtaButton: BooleanSchema;
@@ -44,6 +45,9 @@ export const GAME_MECHANIC_CONFIG_SCHEMA: GameMechanicConfigSchema = {
   },
   useFullscreenDefeat: {
     default: false, // Set to true to use fullscreen defeat image
+  },
+  useSupplementAtlas: {
+    default: true, // Set to false to use single supplement.png image instead of atlas
   },
   showCtaButton: {
     default: true, // Set to false to hide the PLAY NOW button

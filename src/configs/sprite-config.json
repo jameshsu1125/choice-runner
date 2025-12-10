@@ -10,5 +10,9 @@
   "enemyBoss": {
     "frameWidth": 261,
     "frameHeight": 176
+  },
+  "supplement": {
+    "frameWidth": 386,
+    "frameHeight": 348
   }
 }
