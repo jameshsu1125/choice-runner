@@ -1,5 +1,6 @@
 import {
   Container,
+  Graphics,
   Image,
   Scene,
   Sprite,
@@ -29,6 +30,7 @@ export default class SupplementWithCounterComponent extends Container {
   private defaultScale = 1;
 
   // items
+  public collisionArea?: Graphics;
   public bucket?: Sprite;
   private text?: Text;
   private item?: Image;
@@ -75,12 +77,29 @@ export default class SupplementWithCounterComponent extends Container {
     this.createBucket();
     this.createText();
     this.createItem();
+    this.drawCollisionArea();
   }
 
   public setDepths(depth: number): void {
     this.bucket?.setDepth(depth);
     this.text?.setDepth(depth);
     this.item?.setDepth(depth);
+    this.collisionArea?.setDepth(depth);
+  }
+
+  private drawCollisionArea(): void {
+    this.collisionArea?.clear();
+
+    if (this.bucket) {
+      this.collisionArea = this.scene.add.graphics();
+      this.collisionArea.fillStyle(0xff0000, 0.3);
+      this.collisionArea.fillRect(
+        this.bucket.x - this.bucket.displayWidth / 2,
+        this.bucket.y - this.bucket.displayHeight / 2,
+        this.bucket.displayWidth,
+        this.bucket.displayHeight
+      );
+    }
   }
 
   private createItem(): void {
@@ -211,6 +230,8 @@ export default class SupplementWithCounterComponent extends Container {
     this.item?.destroy();
     this.text?.destroy();
     this.bucket?.destroy();
+    this.collisionArea?.clear();
+    this.collisionArea?.destroy();
 
     if (this.bucket && this.bucket.body) this.bucket.body.enable = false;
 
@@ -263,11 +284,12 @@ export default class SupplementWithCounterComponent extends Container {
     this.bucket?.setVisible(value);
     this.text?.setVisible(value);
     this.item?.setVisible(value);
+    this.collisionArea?.clear();
   }
 
   public update(percentage: number): void {
-    const { item, bucket, text } = this;
-    if (!bucket || !text || !item || this.isDestroyed) return;
+    const { item, bucket, text, collisionArea } = this;
+    if (!bucket || !text || !item || !collisionArea || this.isDestroyed) return;
 
     const { offsetY } = playerPreset;
     const { gap, missOffsetY } = supplementPreset;
@@ -295,6 +317,8 @@ export default class SupplementWithCounterComponent extends Container {
       currentPercent;
 
     this.setPxy(x, y, bucketScale);
+
+    this.drawCollisionArea();
 
     const missPositionY =
       this.scene.scale.height - bucket.displayHeight - offsetY - missOffsetY;

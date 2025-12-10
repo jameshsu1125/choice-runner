@@ -170,7 +170,6 @@ export default class EnemyWithCounterComponent extends Container {
           () => {
             if (this.isDestroyed) return;
             this.decreaseEnemyBlood(enemy, firepower);
-            enemyBeenAttackEffect(enemy);
           },
           undefined,
           this.scene
@@ -181,7 +180,6 @@ export default class EnemyWithCounterComponent extends Container {
           () => {
             if (this.isDestroyed) return;
             this.decreaseEnemyBlood(enemy, firepower);
-            enemyBeenAttackEffect(enemy);
           },
           undefined,
           this.scene
@@ -352,6 +350,7 @@ export default class EnemyWithCounterComponent extends Container {
     this.blood -= currentDamage;
 
     hitEnemyEffect(this.enemy);
+    enemyBeenAttackEffect(this.enemy);
 
     if (this.blood <= 0) {
       this.scene.sound.add("audio-enemy-dead").play({ volume: 0.2 });
@@ -359,6 +358,7 @@ export default class EnemyWithCounterComponent extends Container {
       if (this.config?.blood.type === "boss") {
         this.onGameVictory();
       }
+
       this.destroy();
       this.removeStateByName(this.enemyName);
     }
