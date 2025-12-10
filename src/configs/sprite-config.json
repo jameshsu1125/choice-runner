@@ -14,5 +14,9 @@
   "supplement": {
     "frameWidth": 386,
     "frameHeight": 348
+  },
+  "supplementBroken": {
+    "frameWidth": 1442,
+    "frameHeight": 980
   }
 }

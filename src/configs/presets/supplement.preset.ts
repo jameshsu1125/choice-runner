@@ -39,7 +39,7 @@ export const supplementEntityPresetConfig: {
     data: {
       type: Math.random() > 0.5 ? "ARMY" : "GUN",
       quadrant: Math.floor(-1 + Math.random() * 2) as TQuadrant,
-      count: Math.floor(1 + Math.random() * 10),
+      count: Math.floor(1 + Math.random() * 1),
     },
   };
 });

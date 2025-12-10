@@ -31,6 +31,7 @@ export default class SupplementWithCounterComponent extends Container {
   // items
   public collisionArea?: Graphics;
   private bucket?: Sprite;
+  private bucketBroken?: Sprite;
   private text?: Text;
   private item?: Image;
 
@@ -73,14 +74,46 @@ export default class SupplementWithCounterComponent extends Container {
   }
 
   private build(): void {
+    this.createBrokenBucketAnimation();
     this.createBucket();
     this.createText();
     this.createItem();
     this.drawCollisionArea();
   }
 
+  private createBrokenBucketAnimation(): void {
+    const { ratio } = supplementPreset;
+
+    // Use atlas with animation
+    this.bucketBroken = this.scene.physics.add.sprite(
+      0,
+      0,
+      "supplementBrokenSheet"
+    );
+    this.bucketBroken.setVisible(false);
+
+    const { width, height } = getSize(this.bucketBroken, ratio);
+    this.bucketBroken.setDisplaySize(width, height);
+
+    this.bucketBroken.anims.create({
+      key: "breaking",
+      frames: this.scene.anims.generateFrameNames("supplementBrokenSheet", {
+        prefix: "",
+        start: 1,
+        end: 14,
+        zeroPad: 3,
+      }),
+      frameRate: 18,
+    });
+
+    this.bucketBroken?.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+      this.bucketBroken?.destroy();
+    });
+  }
+
   public setDepths(depth: number): void {
     this.bucket?.setDepth(depth);
+    this.bucketBroken?.setDepth(depth);
     this.text?.setDepth(depth);
     this.item?.setDepth(depth);
     this.collisionArea?.setDepth(depth);
@@ -209,7 +242,7 @@ export default class SupplementWithCounterComponent extends Container {
 
     this.text?.setPosition(x, y);
     this.bucket?.setPosition(x, y);
-    this.bucket?.refreshBody();
+    this.bucketBroken?.setPosition(x, y - this.bucket!.displayHeight * 0.23);
 
     const itemY = y - this.bucket!.displayHeight * 0.5 + offsetY * scale;
     this.item?.setPosition(x, itemY);
@@ -244,6 +277,8 @@ export default class SupplementWithCounterComponent extends Container {
         () => {
           this.text?.destroy();
           this.text?.setVisible(false);
+          this.bucketBroken?.setVisible(true);
+          this.bucketBroken?.play("breaking", false);
         },
         () => {
           this.bucket?.destroy();
@@ -287,8 +322,16 @@ export default class SupplementWithCounterComponent extends Container {
   }
 
   public update(percentage: number): void {
-    const { item, bucket, text, collisionArea } = this;
-    if (!bucket || !text || !item || !collisionArea || this.isDestroyed) return;
+    const { item, bucket, text, collisionArea, bucketBroken } = this;
+    if (
+      !bucket ||
+      !text ||
+      !item ||
+      !collisionArea ||
+      !bucketBroken ||
+      this.isDestroyed
+    )
+      return;
 
     const { offsetY } = playerPreset;
     const { gap, missOffsetY } = supplementPreset;
@@ -307,6 +350,7 @@ export default class SupplementWithCounterComponent extends Container {
     bucket.setScale(bucketScale, bucketScale);
     text.setScale(bucketScale, bucketScale);
     item.setScale(itemScale, itemScale);
+    bucketBroken.setScale(bucketScale, bucketScale);
 
     const x =
       this.scene.scale.width / 2 +

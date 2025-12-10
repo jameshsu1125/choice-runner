@@ -82,7 +82,7 @@ export default class PreloadScene extends Phaser.Scene {
       this.load.image("bossSprite", window.base64Map["assets"]["boss"]);
     }
 
-    // Load boss sprite based on configuration
+    // Load Supplement sprite based on configuration
     if (GAME_MECHANIC_CONSTANTS.useSupplementAtlas) {
       this.load.atlas(
         "supplementSheet",
@@ -90,11 +90,17 @@ export default class PreloadScene extends Phaser.Scene {
         window.base64Map["assets"]["supplement-shipment-atlas-json"]
       );
     } else {
-      // Load single boss image instead of atlas
+      // Load single Supplement image instead of atlas
       this.load.image(
         "supplementSprite",
         window.base64Map["assets"]["supplement-shipment"]
       );
     }
+
+    this.load.atlas(
+      "supplementBrokenSheet",
+      window.base64Map["assets"]["supplement-shipment-broken-atlas"],
+      window.base64Map["assets"]["supplement-shipment-broken-atlas-json"]
+    );
   }
 }
