@@ -86,7 +86,7 @@ export const enemyDeadEffect = (
 
   const lifespan =
     type === "boss" ? { min: 1000, max: 2000 } : { min: 100, max: 500 };
-  const scale = type === "boss" ? { start: 1, end: 0 } : { start: 0.3, end: 0 };
+  const scale = { start: enemy.scale, end: 0 };
   const quantity = type === "boss" ? 60 : 40;
   const explode = type === "boss" ? 60 : 30;
 
@@ -104,5 +104,78 @@ export const enemyDeadEffect = (
   // TODO phaser Bug
   if (type === "boss") {
     fireEmitter.setDepth(1498);
+  }
+};
+
+export const enemyBeenAttackEffect = (enemy: Sprite) => {
+  const { scene } = enemy;
+
+  // createShatteredEffect
+  const texture = enemy.texture;
+  const frame = enemy.frame;
+  const spriteX = enemy.x;
+  const spriteY = enemy.y;
+  const spriteScale = enemy.scaleX;
+  const spriteRotation = enemy.rotation;
+
+  const width = frame.width;
+  const height = frame.height;
+  const numPieces = Phaser.Math.Between(6, 10);
+
+  // Create fragments using cropped sprites (lighter than render textures)
+  for (let i = 0; i < numPieces; i++) {
+    // Random crop area on the texture
+    const cropX = Phaser.Math.Between(0, Math.max(1, width * 0.7));
+    const cropY = Phaser.Math.Between(0, Math.max(1, height * 0.7));
+    // Smaller fragment sizes (15-25% of original)
+    const cropWidth = Phaser.Math.Between(width * 0.15, width * 0.25);
+    const cropHeight = Phaser.Math.Between(height * 0.15, height * 0.25);
+
+    // Create sprite fragment
+    const fragment = scene.add.sprite(
+      spriteX,
+      spriteY,
+      texture.key,
+      frame.name
+    );
+
+    // Scale fragments smaller (60-80% of original sprite scale)
+    const fragmentScale = spriteScale * Phaser.Math.FloatBetween(0.6, 0.8);
+    fragment.setScale(fragmentScale);
+    fragment.setCrop(cropX, cropY, cropWidth, cropHeight);
+    fragment.setOrigin(0.5, 0.5);
+    fragment.setRotation(spriteRotation);
+
+    // Calculate offset based on crop position (using fragment scale)
+    const offsetX = (cropX + cropWidth / 2 - width / 2) * fragmentScale;
+    const offsetY = (cropY + cropHeight / 2 - height / 2) * fragmentScale;
+    fragment.setPosition(spriteX + offsetX, spriteY + offsetY);
+
+    // Add Arcade Physics for realistic motion
+    scene.physics.add.existing(fragment);
+    const body = fragment.body as Phaser.Physics.Arcade.Body;
+
+    // Random velocity for explosive scatter effect
+    const velocityX = Phaser.Math.Between(-300, 300);
+    const velocityY = Phaser.Math.Between(-400, -100);
+    body.setVelocity(velocityX, velocityY);
+
+    // Gravity for realistic falling
+    body.setGravityY(800);
+
+    // Random angular velocity for spinning effect
+    const angularVelocity = Phaser.Math.Between(-360, 360);
+    body.setAngularVelocity(angularVelocity);
+
+    // Fade out and destroy
+    scene.tweens.add({
+      targets: fragment,
+      alpha: 0,
+      duration: 500,
+      delay: Phaser.Math.Between(0, 100),
+      onComplete: () => {
+        fragment.destroy();
+      },
+    });
   }
 };

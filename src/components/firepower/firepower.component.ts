@@ -13,6 +13,7 @@ import {
   getDisplaySizeByWidthPercentage as getSize,
 } from "../../utils/layout.utils";
 import { PlayerComponent } from "../characters/player.component";
+import { enemyBeenAttackEffect } from "../characters/enemy.config";
 
 const FIREPOWER_CONSTANTS = {
   PLAYER_FIRE_DELAY_MS: 30,
@@ -196,6 +197,7 @@ export class FirepowerComponent extends Container {
             if (hasCollided || !firepower.active) return;
             hasCollided = true;
             this.decreaseEnemyBlood(state.target.enemy!, firepower);
+            enemyBeenAttackEffect(state.target.enemy!);
           },
           undefined,
           this.scene

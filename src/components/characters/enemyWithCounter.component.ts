@@ -12,7 +12,11 @@ import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import MainScene from "../../scenes/main.scene";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplaySizeByWidthPercentage } from "../../utils/layout.utils";
-import { enemyDeadEffect, hitEnemyEffect } from "./enemy.config";
+import {
+  enemyBeenAttackEffect,
+  enemyDeadEffect,
+  hitEnemyEffect,
+} from "./enemy.config";
 
 export default class EnemyWithCounterComponent extends Container {
   private isDestroyed = false;
@@ -166,6 +170,7 @@ export default class EnemyWithCounterComponent extends Container {
           () => {
             if (this.isDestroyed) return;
             this.decreaseEnemyBlood(enemy, firepower);
+            enemyBeenAttackEffect(enemy);
           },
           undefined,
           this.scene
@@ -176,6 +181,7 @@ export default class EnemyWithCounterComponent extends Container {
           () => {
             if (this.isDestroyed) return;
             this.decreaseEnemyBlood(enemy, firepower);
+            enemyBeenAttackEffect(enemy);
           },
           undefined,
           this.scene
@@ -362,7 +368,7 @@ export default class EnemyWithCounterComponent extends Container {
     if (this.isDestroyed) return;
     this.isDestroyed = true;
 
-    if (this.enemy)
+    if (this.enemy) {
       enemyDeadEffect(
         this.enemy,
         this.graphicsName,
@@ -379,6 +385,7 @@ export default class EnemyWithCounterComponent extends Container {
           super.destroy(true);
         }
       );
+    }
   }
 
   public setPositionByPercentage(percentage: number) {

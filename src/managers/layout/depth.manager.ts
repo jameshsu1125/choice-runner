@@ -36,7 +36,8 @@ const depthState = {
   firepower: totalDepth, // += 1
   blood: totalDepth + 1000, // number should > firepower count,
   player: totalDepth * 2 + 1000, // all character total count + blood count + firepower count
-  end: totalDepth * 2 + 1000 + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max,
+  end:
+    totalDepth * 2 + 1000 + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max * 3,
 };
 
 export const getDepthByOptions = (type: DepthType, time?: number) => {
