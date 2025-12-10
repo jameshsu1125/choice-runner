@@ -134,4 +134,10 @@ export class SupplementComponent extends Container {
       state.target.decreaseNum();
     }
   }
+
+  public onStart(): void {
+    this.supplementState.forEach((state) => {
+      state.target.doRollingAnimation();
+    });
+  }
 }

@@ -91,7 +91,7 @@ export default class SupplementWithCounterComponent extends Container {
 
     if (this.bucket) {
       this.collisionArea = this.scene.add.graphics();
-      this.collisionArea.fillStyle(0xff0000, 0.3);
+      this.collisionArea.fillStyle(0xff0000, 0);
       this.collisionArea.fillRect(
         this.bucket.x - this.bucket.displayWidth / 2,
         this.bucket.y - this.bucket.displayHeight / 2,
@@ -253,6 +253,12 @@ export default class SupplementWithCounterComponent extends Container {
           this.removeStateByName(this.supplementName);
         }
       );
+    }
+  }
+
+  public doRollingAnimation(): void {
+    if (this.bucket && GAME_MECHANIC_CONSTANTS.useSupplementAtlas) {
+      this.bucket.play("rolling", true);
     }
   }
 
