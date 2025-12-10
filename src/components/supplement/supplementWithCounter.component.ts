@@ -27,11 +27,10 @@ export default class SupplementWithCounterComponent extends Container {
   public supplementName: string;
 
   private num = 0;
-  private defaultScale = 1;
 
   // items
   public collisionArea?: Graphics;
-  public bucket?: Sprite;
+  private bucket?: Sprite;
   private text?: Text;
   private item?: Image;
 
@@ -99,6 +98,8 @@ export default class SupplementWithCounterComponent extends Container {
         this.bucket.displayWidth,
         this.bucket.displayHeight
       );
+      if (GAME_MECHANIC_CONSTANTS.stopCollision)
+        this.addCollision(this.collisionArea);
     }
   }
 
@@ -125,13 +126,6 @@ export default class SupplementWithCounterComponent extends Container {
   private createBucket(): void {
     const { ratio } = supplementPreset;
 
-    // this.bucket = this.scene.physics.add.sprite(0, 0, "supplementSprite");
-    // this.bucket.setName(this.supplementName);
-
-    // const { width, height } = getSize(this.bucket, ratio);
-    // this.bucket.setDisplaySize(width, height);
-    // this.defaultScale = this.bucket.scale;
-
     if (GAME_MECHANIC_CONSTANTS.useSupplementAtlas) {
       // Use atlas with animation
       this.bucket = this.scene.physics.add.sprite(0, 0, "supplementSheet");
@@ -139,7 +133,6 @@ export default class SupplementWithCounterComponent extends Container {
 
       const { width, height } = getSize(this.bucket, ratio);
       this.bucket.setDisplaySize(width, height);
-      this.defaultScale = this.bucket.scale;
 
       this.bucket.anims.create({
         key: "rolling",
@@ -159,7 +152,6 @@ export default class SupplementWithCounterComponent extends Container {
       this.bucket.setName(this.supplementName);
       this.bucket.setDisplaySize(width, height);
     }
-    if (GAME_MECHANIC_CONSTANTS.stopCollision) this.addCollision(this.bucket);
   }
 
   private createText(): void {
@@ -174,7 +166,7 @@ export default class SupplementWithCounterComponent extends Container {
     this.text.setOrigin(0.5, 0.5);
   }
 
-  private addCollision(bucket: Phaser.Physics.Arcade.Sprite): void {
+  private addCollision(collisionArea: Phaser.GameObjects.Graphics): void {
     const { firepower } =
       ServiceLocator.get<SceneLayoutManager>(
         "gameAreaManager"
@@ -183,7 +175,7 @@ export default class SupplementWithCounterComponent extends Container {
     if (firepower) {
       firepower.firepowerContainer.forEach((firepower) => {
         this.scene.physics.add.collider(
-          bucket,
+          collisionArea,
           firepower,
           () => {
             if (this.isDestroyed) return;
@@ -194,7 +186,7 @@ export default class SupplementWithCounterComponent extends Container {
         );
 
         this.scene.physics.add.overlap(
-          bucket,
+          collisionArea,
           firepower,
           () => {
             if (this.isDestroyed) return;
@@ -273,6 +265,7 @@ export default class SupplementWithCounterComponent extends Container {
         this.config?.type || "ARMY",
         this.supplementName
       );
+      this.collisionArea?.clear();
     } else {
       this.text?.setText(`${this.num}`);
       if (this.bucket && this.item)
