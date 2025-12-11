@@ -9,7 +9,6 @@ import {
   gamePreset,
 } from "../../configs/presets/layout.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
-import MainScene from "../../scenes/main.scene";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplaySizeByWidthPercentage } from "../../utils/layout.utils";
 import {
@@ -46,9 +45,9 @@ export default class EnemyWithCounterComponent extends Container {
 
   private removeStateByName: (name: string) => void;
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (player: Sprite, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
   private onGameVictory: () => void;
-  private sheetName: string;
+  private sheetName: string = "";
 
   private config?: (typeof enemyEntityConfig)[number]["data"];
 
@@ -57,14 +56,8 @@ export default class EnemyWithCounterComponent extends Container {
     name: string,
     config: (typeof enemyEntityConfig)[number]["data"],
     removeStateByName: (name: string) => void,
-    decreaseEnemyBlood: (
-      enemy: Phaser.Physics.Arcade.Sprite,
-      firepower: Phaser.Physics.Arcade.Sprite
-    ) => void,
-    decreasePlayerBlood: (
-      player: Phaser.Physics.Arcade.Sprite,
-      enemy: Phaser.Physics.Arcade.Sprite
-    ) => void,
+    decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
@@ -73,7 +66,6 @@ export default class EnemyWithCounterComponent extends Container {
     this.decreaseEnemyBlood = decreaseEnemyBlood;
     this.decreasePlayerBlood = decreasePlayerBlood;
     this.onGameVictory = onGameVictory;
-
     this.config = config;
     this.sheetName =
       this.config.blood.type === "boss"
@@ -83,6 +75,28 @@ export default class EnemyWithCounterComponent extends Container {
         : GAME_MECHANIC_CONSTANTS.useEnemyAtlas
         ? "enemySheet"
         : "enemySprite";
+
+    this.build();
+    this.setHealthBar();
+  }
+
+  setDepths(depth: number): void {
+    if (this.enemy) this.enemy.setDepth(depth);
+    this.healthBarBorder.setDepth(depth);
+    this.healthBar.setDepth(depth);
+    this.healthBarFill.setDepth(depth);
+  }
+
+  private build(): void {
+    this.initHealthBar();
+    this.createEnemy();
+    if (!GAME_MECHANIC_CONSTANTS.stopCollision) this.addCollision();
+  }
+
+  private initHealthBar(): void {
+    if (!this.config) return;
+    const { config } = this;
+
     this.blood = config.blood.value;
     this.maxBlood = config.blood.max;
 
@@ -101,19 +115,9 @@ export default class EnemyWithCounterComponent extends Container {
     colorGraphics.fillRect(0, 0, width, height);
     colorGraphics.generateTexture(`${this.config.blood.color}`, width, height);
     this.healthBar.setTexture(`${this.config.blood.color}`);
-
-    this.build();
-    this.setHealthBar();
   }
 
-  setDepths(depth: number): void {
-    if (this.enemy) this.enemy.setDepth(depth);
-    this.healthBarBorder.setDepth(depth);
-    this.healthBar.setDepth(depth);
-    this.healthBarFill.setDepth(depth);
-  }
-
-  private build(): void {
+  private createEnemy(): void {
     const { ratios, randomWidth } = enemyPreset;
 
     this.enemy = this.scene.physics.add.staticSprite(0, 0, this.sheetName);
@@ -152,11 +156,12 @@ export default class EnemyWithCounterComponent extends Container {
       this.enemy.play("run", true);
     }
     // For single sprite, no animation needed
-
-    if (!GAME_MECHANIC_CONSTANTS.stopCollision) this.addCollision(this.enemy);
   }
 
-  private addCollision(enemy: Phaser.Physics.Arcade.Sprite) {
+  private addCollision() {
+    if (!this.enemy) return;
+    const { enemy } = this;
+
     const layoutContainers =
       ServiceLocator.get<SceneLayoutManager>(
         "gameAreaManager"
@@ -190,12 +195,13 @@ export default class EnemyWithCounterComponent extends Container {
     if (layoutContainers.player) {
       layoutContainers.player.players.forEach((player) => {
         if (!player.player) return;
+        if (!player.hitArea) return;
         this.scene.physics.add.collider(
           enemy,
-          player.player,
+          player.hitArea,
           () => {
             if (this.isDestroyed) return;
-            this.decreasePlayerBlood(player.player!, enemy);
+            this.decreasePlayerBlood(player.hitArea!, enemy);
           },
           undefined,
           this.scene
@@ -205,7 +211,7 @@ export default class EnemyWithCounterComponent extends Container {
           player.player,
           () => {
             if (this.isDestroyed) return;
-            this.decreasePlayerBlood(player.player!, enemy);
+            this.decreasePlayerBlood(player.hitArea!, enemy);
           },
           undefined,
           this.scene
@@ -330,13 +336,13 @@ export default class EnemyWithCounterComponent extends Container {
     }
   }
 
-  setVisibility(value: boolean) {
+  public setVisibility(value: boolean) {
     this.enemy?.setVisible(value);
     this.healthBarBorder.setVisible(value);
     this.healthBarFill.setVisible(value);
   }
 
-  public loseBlood(): void {
+  public decreaseBlood(): void {
     if (!this.enemy || this.isDestroyed) return;
     const { damage } = firepowerPreset;
 

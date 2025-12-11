@@ -29,8 +29,7 @@ export default class SupplementWithCounterComponent extends Container {
   private num = 0;
 
   // items
-  public collisionArea?: Graphics;
-  private bucket?: Sprite;
+  public bucket?: Sprite;
   private bucketBroken?: Sprite;
   private text?: Text;
   private item?: Image;
@@ -78,7 +77,7 @@ export default class SupplementWithCounterComponent extends Container {
     this.createBucket();
     this.createText();
     this.createItem();
-    this.drawCollisionArea();
+    this.addCollision();
   }
 
   private createBrokenBucketAnimation(): void {
@@ -116,24 +115,6 @@ export default class SupplementWithCounterComponent extends Container {
     this.bucketBroken?.setDepth(depth);
     this.text?.setDepth(depth);
     this.item?.setDepth(depth);
-    this.collisionArea?.setDepth(depth);
-  }
-
-  private drawCollisionArea(): void {
-    this.collisionArea?.clear();
-
-    if (this.bucket) {
-      this.collisionArea = this.scene.add.graphics();
-      this.collisionArea.fillStyle(0xff0000, 0);
-      this.collisionArea.fillRect(
-        this.bucket.x - this.bucket.displayWidth / 2,
-        this.bucket.y - this.bucket.displayHeight / 2,
-        this.bucket.displayWidth,
-        this.bucket.displayHeight
-      );
-      if (GAME_MECHANIC_CONSTANTS.stopCollision)
-        this.addCollision(this.collisionArea);
-    }
   }
 
   private createItem(): void {
@@ -199,7 +180,10 @@ export default class SupplementWithCounterComponent extends Container {
     this.text.setOrigin(0.5, 0.5);
   }
 
-  private addCollision(collisionArea: Phaser.GameObjects.Graphics): void {
+  private addCollision(): void {
+    if (!this.bucket) return;
+    const { bucket } = this;
+
     const { firepower } =
       ServiceLocator.get<SceneLayoutManager>(
         "gameAreaManager"
@@ -208,7 +192,7 @@ export default class SupplementWithCounterComponent extends Container {
     if (firepower) {
       firepower.firepowerContainer.forEach((firepower) => {
         this.scene.physics.add.collider(
-          collisionArea,
+          bucket,
           firepower,
           () => {
             if (this.isDestroyed) return;
@@ -219,7 +203,7 @@ export default class SupplementWithCounterComponent extends Container {
         );
 
         this.scene.physics.add.overlap(
-          collisionArea,
+          bucket,
           firepower,
           () => {
             if (this.isDestroyed) return;
@@ -232,7 +216,7 @@ export default class SupplementWithCounterComponent extends Container {
     }
   }
 
-  public setPxy(x: number, y: number, scale: number): void {
+  private setPxy(x: number, y: number, scale: number): void {
     const preset =
       this.config?.type === "GUN"
         ? supplementPreset.item.gun
@@ -240,8 +224,9 @@ export default class SupplementWithCounterComponent extends Container {
 
     const { offsetY } = preset;
 
-    this.text?.setPosition(x, y);
     this.bucket?.setPosition(x, y);
+    this.text?.setPosition(x, y);
+
     this.bucketBroken?.setPosition(x, y - this.bucket!.displayHeight * 0.23);
 
     const itemY = y - this.bucket!.displayHeight * 0.5 + offsetY * scale;
@@ -255,8 +240,6 @@ export default class SupplementWithCounterComponent extends Container {
     this.item?.destroy();
     this.text?.destroy();
     this.bucket?.destroy();
-    this.collisionArea?.clear();
-    this.collisionArea?.destroy();
 
     if (this.bucket && this.bucket.body) this.bucket.body.enable = false;
 
@@ -306,7 +289,6 @@ export default class SupplementWithCounterComponent extends Container {
         this.config?.type || "ARMY",
         this.supplementName
       );
-      this.collisionArea?.clear();
     } else {
       this.text?.setText(`${this.num}`);
       if (this.bucket && this.item)
@@ -318,20 +300,11 @@ export default class SupplementWithCounterComponent extends Container {
     this.bucket?.setVisible(value);
     this.text?.setVisible(value);
     this.item?.setVisible(value);
-    this.collisionArea?.clear();
   }
 
   public update(percentage: number): void {
-    const { item, bucket, text, collisionArea, bucketBroken } = this;
-    if (
-      !bucket ||
-      !text ||
-      !item ||
-      !collisionArea ||
-      !bucketBroken ||
-      this.isDestroyed
-    )
-      return;
+    const { item, bucket, text, bucketBroken } = this;
+    if (!bucket || !text || !item || !bucketBroken || this.isDestroyed) return;
 
     const { offsetY } = playerPreset;
     const { gap, missOffsetY } = supplementPreset;
@@ -360,8 +333,6 @@ export default class SupplementWithCounterComponent extends Container {
       currentPercent;
 
     this.setPxy(x, y, bucketScale);
-
-    this.drawCollisionArea();
 
     const missPositionY =
       this.scene.scale.height - bucket.displayHeight - offsetY - missOffsetY;

@@ -107,6 +107,7 @@ export const supplementPreset = {
   get duration() {
     return GAME_MECHANIC_CONSTANTS.enemySpeed;
   },
+  hitColor: 0xff0000,
   item: {
     gun: {
       ratio: 54 / 320,

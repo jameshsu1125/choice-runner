@@ -37,11 +37,7 @@ export const enemyDeadEffect = (
   onStart: () => void,
   onComplete: () => void
 ) => {
-  const { scene } = enemy;
-
-  const originalX = enemy.x;
-  const originalY = enemy.y;
-
+  const { scene, x, y } = enemy;
   const shakeIntensity = 3;
 
   if (onStart) onStart();
@@ -54,14 +50,15 @@ export const enemyDeadEffect = (
 
   scene.tweens.add({
     targets: enemy,
-    x: originalX + shakeIntensity,
-    y: originalY + shakeIntensity,
+    x: x + shakeIntensity,
+    y: y + shakeIntensity,
     duration: 50,
     yoyo: true,
     repeat: 3,
     ease: "Power2.easeInOut",
   });
 
+  // tween color and set enemy overlay color to black
   const color = { r: 255, g: 255, b: 255 };
   scene.tweens.add({
     targets: color,
@@ -101,10 +98,6 @@ export const enemyDeadEffect = (
   });
 
   fireEmitter.explode(explode);
-  // TODO phaser Bug
-  if (type === "boss") {
-    fireEmitter.setDepth(1498);
-  }
 };
 
 export const enemyBeenAttackEffect = (enemy: Sprite) => {

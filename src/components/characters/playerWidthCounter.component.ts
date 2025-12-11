@@ -14,7 +14,6 @@ import { playerFormation } from "../../configs/presets/player.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
@@ -36,6 +35,9 @@ export default class PlayerWidthCounterComponent extends Container {
   public healthBar: Image = this.scene.add.image(0, 0, "health-bar");
   private healthBarFill: Graphics = this.scene.add.graphics();
 
+  public hitArea?: Graphics;
+  private hitAreaState = { debug: false, offset: { x: 0, y: 0.26 } };
+
   // Cached geometry/state to avoid per-frame redraws
   private barInitialized = false;
   private barBaseWidth = 0;
@@ -45,13 +47,13 @@ export default class PlayerWidthCounterComponent extends Container {
 
   private increasePlayerCount: (count: number, gateName: string) => void;
   private removePlayerByName: (name: string) => void;
-  private decreasePlayerBlood: (player: Sprite, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
   private currentDepth: number | null = null;
 
   constructor(
     scene: Phaser.Scene,
     playerName: string,
-    decreasePlayerBlood: (player: Sprite, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
     depth: number
@@ -61,11 +63,37 @@ export default class PlayerWidthCounterComponent extends Container {
     this.decreasePlayerBlood = decreasePlayerBlood;
     this.increasePlayerCount = increasePlayerCount;
     this.removePlayerByName = removePlayerByName;
-
     this.currentDepth = depth;
 
+    this.build();
+  }
+
+  private build(): void {
+    this.initHealthBar();
+    this.createPlayer();
+    this.createCollider();
+    this.drawHitArea();
+  }
+
+  private drawHitArea(): void {
+    if (!this.player) return;
+    const { x, y, displayHeight, displayWidth } = this.player;
+
+    this.hitArea?.clear();
+    this.hitArea = this.scene.add.graphics();
+    this.hitArea.name = this.playerName;
+    this.hitArea.fillStyle(0xff0000, this.hitAreaState.debug ? 0.5 : 0);
+    this.hitArea.fillCircle(
+      x - displayWidth * this.hitAreaState.offset.x,
+      y - displayHeight * (0.5 - this.hitAreaState.offset.y),
+      this.player!.displayWidth * 0.2
+    );
+    this.hitArea.setDepth(this.currentDepth! + this.depth + 10);
+  }
+
+  private initHealthBar(): void {
     const bloodBarDepth =
-      this.currentDepth + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max;
+      this.currentDepth! + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max;
 
     this.healthBarBorder.setDepth(bloodBarDepth);
     this.healthBarBorder.setName("healthBar");
@@ -77,15 +105,9 @@ export default class PlayerWidthCounterComponent extends Container {
 
     this.healthBarFill.setDepth(bloodBarDepth);
     this.healthBarFill.setName("healthBar");
-
-    this.build();
   }
 
-  private build(): void {
-    this.addPlayer();
-  }
-
-  private addHealthBar(x: number, y: number): void {
+  private createHealthBar(x: number, y: number): void {
     if (!this.player) return;
     const { displayWidth, displayHeight } = this.player;
 
@@ -150,7 +172,7 @@ export default class PlayerWidthCounterComponent extends Container {
     }
   }
 
-  private addPlayer(): void {
+  private createPlayer(): void {
     let player: Sprite;
     const targetWidth = this.scene.scale.width * 0.12;
 
@@ -158,7 +180,6 @@ export default class PlayerWidthCounterComponent extends Container {
       // Use atlas with animation
       player = this.scene.physics.add.sprite(0, 0, "playerSheet");
       const targetHeight = (targetWidth / player.width) * player.height;
-      player.setName(this.playerName);
       player.setDisplaySize(targetWidth, targetHeight);
 
       player.anims.create({
@@ -182,7 +203,6 @@ export default class PlayerWidthCounterComponent extends Container {
 
     this.player = player;
     this.player.setDepth(this.currentDepth! + this.depth);
-    // this.addCollider(player);
   }
 
   public stopAnimationSheet(): void {
@@ -212,8 +232,9 @@ export default class PlayerWidthCounterComponent extends Container {
     }).play();
   }
 
-  private addCollider(player: Sprite): void {
-    if (!this.player) return;
+  private createCollider(): void {
+    if (!this.player || !this.hitArea) return;
+    const { hitArea } = this;
 
     const { layoutContainers } =
       ServiceLocator.get<SceneLayoutManager>("gameAreaManager");
@@ -222,16 +243,16 @@ export default class PlayerWidthCounterComponent extends Container {
       const { target } = enemyState;
       if (!target.enemy) {
         this.scene.physics.add.collider(
-          player,
+          hitArea!,
           target,
-          () => this.decreasePlayerBlood(player, target.enemy!),
+          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
           () => {},
           this.scene
         );
         this.scene.physics.add.overlap(
-          player,
+          hitArea!,
           target,
-          () => this.decreasePlayerBlood(player, target.enemy!),
+          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
           () => {},
           this.scene
         );
@@ -241,7 +262,7 @@ export default class PlayerWidthCounterComponent extends Container {
     layoutContainers.gate.gateState.forEach((gateState) => {
       const { target } = gateState;
       this.scene.physics.add.collider(
-        player,
+        hitArea!,
         target,
         () => {
           this.increasePlayerCount(target.num, target.name);
@@ -251,7 +272,7 @@ export default class PlayerWidthCounterComponent extends Container {
         this.scene
       );
       this.scene.physics.add.overlap(
-        player,
+        hitArea!,
         target,
         () => {
           this.increasePlayerCount(target.num, target.name);
@@ -270,11 +291,13 @@ export default class PlayerWidthCounterComponent extends Container {
     this.healthBarFill.destroy();
     if (this.player) {
       this.player.destroy(true);
+      this.hitArea?.clear();
+      this.hitArea?.destroy();
     }
     super.destroy(true);
   }
 
-  public loseBlood() {
+  public decreaseBlood() {
     const { damage } = enemyPreset;
     this.blood -= damage;
 
@@ -299,6 +322,7 @@ export default class PlayerWidthCounterComponent extends Container {
 
     this.player!.setDepth(this.currentDepth! + position.depth);
     this.player!.setPosition(currentX + offset, currentY + offsetY);
-    this.addHealthBar(currentX + offset, currentY + offsetY);
+    this.createHealthBar(currentX + offset, currentY + offsetY);
+    this.drawHitArea();
   }
 }

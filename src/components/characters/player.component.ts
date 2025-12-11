@@ -6,20 +6,23 @@ import {
 import { playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
 import PlayerWidthCounterComponent from "./playerWidthCounter.component";
+import {
+  Container,
+  CursorKeys,
+  Graphics,
+  Sprite,
+} from "../../configs/constants/constants";
 
-export class PlayerComponent extends Phaser.GameObjects.Container {
+export class PlayerComponent extends Container {
   public players: PlayerWidthCounterComponent[] = [];
-  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys = undefined;
+  private cursors?: CursorKeys = undefined;
 
   private isStarted = false;
   private touchState = { isDown: false, playerX: 0, pointerX: 0 };
   public playersCount = GAME_MECHANIC_CONSTANTS.playerReinforce;
   private index = 0;
 
-  private decreasePlayerBlood: (
-    player: Phaser.Physics.Arcade.Sprite,
-    enemy: Phaser.Physics.Arcade.Sprite
-  ) => void;
+  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
 
   private increasePlayerCount: (count: number, gateName: string) => void;
   private onGameOver: () => void;
@@ -28,10 +31,7 @@ export class PlayerComponent extends Phaser.GameObjects.Container {
 
   constructor(
     scene: Phaser.Scene,
-    decreasePlayerBlood: (
-      player: Phaser.Physics.Arcade.Sprite,
-      enemy: Phaser.Physics.Arcade.Sprite
-    ) => void,
+    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     onGameOver: () => void
   ) {
@@ -112,13 +112,13 @@ export class PlayerComponent extends Phaser.GameObjects.Container {
     }
   }
 
-  public loseBlood(player: Phaser.Physics.Arcade.Sprite): void {
+  public decreaseBlood(playerHitArea: Graphics): void {
     const [playerComponent] = this.players.filter(
-      (p) => p.player?.name === player.name
+      (p) => p.player?.name === playerHitArea.name
     );
 
     if (playerComponent) {
-      playerComponent.loseBlood();
+      playerComponent.decreaseBlood();
     }
   }
 

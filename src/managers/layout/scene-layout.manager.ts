@@ -15,6 +15,7 @@ import { gamePreset } from "../../configs/presets/layout.preset";
 import { ANCHORS } from "../../utils/anchors.constants";
 import { scaleImageToCover } from "../../utils/layout.utils";
 import BaseLayoutManager from "./base-layout.manager";
+import { Graphics, Sprite } from "../../configs/constants/constants";
 
 type Background = Phaser.GameObjects.Image;
 
@@ -221,16 +222,13 @@ export default class SceneLayoutManager {
     this.layoutContainers.gate.increaseGateCountByName(gate.name);
   }
 
-  public decreasePlayerBlood(
-    player: Phaser.Physics.Arcade.Sprite,
-    enemy: Phaser.Physics.Arcade.Sprite
-  ): void {
+  public decreasePlayerBlood(playerHitArea: Graphics, enemy: Sprite): void {
     if (enemy.name.startsWith("boss")) {
       // this.layoutContainers.enemy.removeStateByName(enemy.name);
       this.layoutContainers.player.removeAllPlayers();
       this.onGameOver();
     } else {
-      this.layoutContainers.player.loseBlood(player);
+      this.layoutContainers.player.decreaseBlood(playerHitArea);
       this.layoutContainers.enemy.removeStateByName(enemy.name);
     }
     this.scene.sound.add("audio-death").play({ volume: 0.5 });
@@ -240,7 +238,7 @@ export default class SceneLayoutManager {
     enemy: Phaser.Physics.Arcade.Sprite,
     firepower: Phaser.Physics.Arcade.Sprite
   ): void {
-    this.layoutContainers.enemy.loseBlood(enemy);
+    this.layoutContainers.enemy.decreaseBlood(enemy);
     this.layoutContainers.firepower.removeFirepowerByName(firepower.name);
   }
 

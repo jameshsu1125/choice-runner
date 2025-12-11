@@ -1,27 +1,26 @@
 import Phaser from "phaser";
-import { Container, Sprite } from "../../configs/constants/constants";
+import { Container, Graphics, Sprite } from "../../configs/constants/constants";
 import {
   enemyEntityConfig,
   enemyEntityPresetConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
+import { getDepthByOptions } from "../../managers/layout/depth.manager";
 import { TEnemyState } from "./enemy.config";
 import EnemyWidthCounterComponent from "./enemyWithCounter.component";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
 
 export class EnemyComponent extends Container {
   private index = 0;
-
   public enemyState: TEnemyState[] = [];
 
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (player: Sprite, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
   private onGameVictory: () => void;
 
   constructor(
     scene: Phaser.Scene,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (player: Sprite, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
@@ -31,7 +30,8 @@ export class EnemyComponent extends Container {
     this.onGameVictory = onGameVictory;
     this.setPosition(-scene.scale.width / 2, -scene.scale.height / 2);
 
-    requestAnimationFrame(() => this.buildBeforeStart());
+    // requestAnimationFrame(() => this.buildBeforeStart());
+    this.buildBeforeStart();
   }
 
   public buildBeforeStart(): void {
@@ -82,20 +82,17 @@ export class EnemyComponent extends Container {
       (state) => state.target.enemyName === name
     );
 
-    if (state) {
-      state.target.destroy();
-    }
-
+    if (state) state.target.destroy();
     this.enemyState = this.enemyState.filter(
       (state) => state.target.enemyName !== name
     );
   }
 
-  public loseBlood(enemy: Sprite) {
+  public decreaseBlood(enemy: Sprite) {
     const [state] = this.enemyState.filter(
       (state) => state.target.enemyName === enemy.name
     );
-    if (state) state.target.loseBlood();
+    if (state) state.target.decreaseBlood();
   }
 
   public update(time: number): void {

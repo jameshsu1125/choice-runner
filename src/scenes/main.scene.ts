@@ -14,111 +14,114 @@ import { openStoreUrl } from "../utils/storeview";
 // import { DebugOverlay } from "../services/event-bus/debug-overlay";
 
 export default class MainScene extends Phaser.Scene {
-    private firepowerEntity?: FirepowerEntity;
-    private gateEntity?: GateEntity;
-    private enemyEntity?: EnemyEntity;
-    private supplementEntity?: SupplementEntity;
-    private finishLineEntity?: FinishLineEntity;
+  private firepowerEntity?: FirepowerEntity;
+  private gateEntity?: GateEntity;
+  private enemyEntity?: EnemyEntity;
+  private supplementEntity?: SupplementEntity;
+  private finishLineEntity?: FinishLineEntity;
 
-    private isGameOver = false;
-    private updateTime: number = 0;
-    public zIndex: number = 998;
+  private isGameOver = false;
+  private updateTime: number = 0;
+  public zIndex: number = 998;
 
-    constructor() {
-        super("MainScene");
-    }
+  constructor() {
+    super("MainScene");
+  }
 
-    /**
-     * This fn gets called by Phaser.js when the scene is created
-     */
-    create() {
-        // DebugOverlay.getInstance();
-        new ServiceRegistry(this);
-        this.initializeChoreography();
-        this.initEventListeners();
-        this.initializeDebugService();
-    }
+  /**
+   * This fn gets called by Phaser.js when the scene is created
+   */
+  create() {
+    // DebugOverlay.getInstance();
+    new ServiceRegistry(this);
+    this.initializeChoreography();
+    this.initEventListeners();
+    this.initializeDebugService();
+  }
 
-    private initializeDebugService(): void {
-        // Initialize debug service
-        const debugService = DebugService.getInstance();
-        debugService.initialize(this);
-    }
+  private initializeDebugService(): void {
+    // Initialize debug service
+    const debugService = DebugService.getInstance();
+    debugService.initialize(this);
+  }
 
-    private initializeChoreography(): void {
-        this.initializeSystems();
-    }
+  private initializeChoreography(): void {
+    this.initializeSystems();
+  }
 
-    private initializeSystems(): void {
-        ServiceLocator.get<SceneLayoutManager>("gameAreaManager").createGameAreas();
-        ServiceLocator.get<EndScreenSystem>("victorySystem").initialize();
-    }
+  private initializeSystems(): void {
+    ServiceLocator.get<SceneLayoutManager>("gameAreaManager").createGameAreas();
+    ServiceLocator.get<EndScreenSystem>("victorySystem").initialize();
+  }
 
-    private initEventListeners(): void {
-        this.addEntityListener();
-    }
+  private initEventListeners(): void {
+    this.addEntityListener();
+  }
 
-    private addEntityListener(): void {
-        this.firepowerEntity = new FirepowerEntity();
-        this.gateEntity = new GateEntity();
-        this.enemyEntity = new EnemyEntity();
-        this.supplementEntity = new SupplementEntity();
-        this.finishLineEntity = new FinishLineEntity();
+  private addEntityListener(): void {
+    this.firepowerEntity = new FirepowerEntity();
+    this.gateEntity = new GateEntity();
+    this.enemyEntity = new EnemyEntity();
+    this.supplementEntity = new SupplementEntity();
+    this.finishLineEntity = new FinishLineEntity();
 
-        EnterFrame.add((time: { delta: number }) => {
-            this.gateEntity?.update(time.delta);
-            this.enemyEntity?.update(time.delta);
-            this.supplementEntity?.update(time.delta);
-            this.finishLineEntity?.update(time.delta);
-        });
-    }
+    EnterFrame.add((time: { delta: number }) => {
+      this.gateEntity?.update(time.delta);
+      this.enemyEntity?.update(time.delta);
+      this.supplementEntity?.update(time.delta);
+      this.finishLineEntity?.update(time.delta);
+    });
+  }
 
-    public onLandingAnimationEnd(): void {
-        if (this.isGameOver) return;
-        const onUserInput = (event: Event) => {
-            // Ignore clicks on debug panel (lil-gui)
-            const target = event.target as HTMLElement;
-            if (target?.closest(".lil-gui") || target?.classList.contains("lil-gui")) {
-                return;
-            }
+  public onLandingAnimationEnd(): void {
+    if (this.isGameOver) return;
+    const onUserInput = (event: Event) => {
+      // Ignore clicks on debug panel (lil-gui)
+      const target = event.target as HTMLElement;
+      if (
+        target?.closest(".lil-gui") ||
+        target?.classList.contains("lil-gui")
+      ) {
+        return;
+      }
 
-            ServiceLocator.get<SceneLayoutManager>("gameAreaManager").onStart(
-                this.onGameOver.bind(this)
-            );
+      ServiceLocator.get<SceneLayoutManager>("gameAreaManager").onStart(
+        this.onGameOver.bind(this)
+      );
 
-            this.firepowerEntity?.onStart();
+      this.firepowerEntity?.onStart();
 
-            EnterFrame.play();
+      EnterFrame.play();
 
-            window.removeEventListener("pointerdown", onUserInput);
-            window.removeEventListener("keydown", onUserInput);
+      window.removeEventListener("pointerdown", onUserInput);
+      window.removeEventListener("keydown", onUserInput);
 
-            // window.addEventListener("blur", () => {
-            //   if (!STOP_COLLISION) return location.reload();
-            // });
-        };
-        window.addEventListener("pointerdown", onUserInput);
-        window.addEventListener("keydown", onUserInput);
-    }
+      // window.addEventListener("blur", () => {
+      //   if (!STOP_COLLISION) return location.reload();
+      // });
+    };
+    window.addEventListener("pointerdown", onUserInput);
+    window.addEventListener("keydown", onUserInput);
+  }
 
-    public getIndex(): number {
-        this.zIndex -= 1;
-        return this.zIndex;
-    }
+  public getIndex(): number {
+    this.zIndex -= 1;
+    return this.zIndex;
+  }
 
-    private onGameOver(): void {
-        this.isGameOver = true;
+  private onGameOver(): void {
+    this.isGameOver = true;
 
-        // TODO: For platform game preview, should have a config for restart or RTB ad serving.
-        this.time.delayedCall(2000, () => {
-            openStoreUrl();
-        });
-    }
+    // TODO: For platform game preview, should have a config for restart or RTB ad serving.
+    this.time.delayedCall(2000, () => {
+      openStoreUrl();
+    });
+  }
 
-    update(time: number, delta: number): void {
-        this.updateTime = time;
-        if (this.isGameOver) return;
-        ServiceLocator.get<SceneLayoutManager>("gameAreaManager").update(time);
-        this.firepowerEntity?.update(time, delta);
-    }
+  update(time: number, delta: number): void {
+    this.updateTime = time;
+    if (this.isGameOver) return;
+    ServiceLocator.get<SceneLayoutManager>("gameAreaManager").update(time);
+    this.firepowerEntity?.update(time, delta);
+  }
 }
