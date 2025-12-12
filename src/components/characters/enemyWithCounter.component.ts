@@ -194,7 +194,6 @@ export default class EnemyWithCounterComponent extends Container {
 
     if (layoutContainers.player) {
       layoutContainers.player.players.forEach((player) => {
-        if (!player.player) return;
         if (!player.hitArea) return;
         this.scene.physics.add.collider(
           enemy,

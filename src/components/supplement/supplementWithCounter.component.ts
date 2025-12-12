@@ -77,7 +77,7 @@ export default class SupplementWithCounterComponent extends Container {
     this.createBucket();
     this.createText();
     this.createItem();
-    this.addCollision();
+    this.createCollision();
   }
 
   private createBrokenBucketAnimation(): void {
@@ -180,7 +180,7 @@ export default class SupplementWithCounterComponent extends Container {
     this.text.setOrigin(0.5, 0.5);
   }
 
-  private addCollision(): void {
+  private createCollision(): void {
     if (!this.bucket) return;
     const { bucket } = this;
 
