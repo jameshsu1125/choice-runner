@@ -22,7 +22,7 @@ export class PlayerComponent extends Container {
   public playersCount = GAME_MECHANIC_CONSTANTS.playerReinforce;
   private index = 0;
 
-  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
 
   private increasePlayerCount: (count: number, gateName: string) => void;
   private onGameOver: () => void;
@@ -31,7 +31,7 @@ export class PlayerComponent extends Container {
 
   constructor(
     scene: Phaser.Scene,
-    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     onGameOver: () => void
   ) {
@@ -112,7 +112,7 @@ export class PlayerComponent extends Container {
     }
   }
 
-  public decreaseBlood(playerHitArea: Graphics): void {
+  public decreaseBlood(playerHitArea: Sprite): void {
     const [playerComponent] = this.players.filter(
       (p) => p.player?.name === playerHitArea.name
     );

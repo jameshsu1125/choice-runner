@@ -14,13 +14,13 @@ export class EnemyComponent extends Container {
   public enemyState: TEnemyState[] = [];
 
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
 
   constructor(
     scene: Phaser.Scene,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);

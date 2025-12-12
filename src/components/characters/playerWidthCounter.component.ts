@@ -35,8 +35,9 @@ export default class PlayerWidthCounterComponent extends Container {
   public healthBar: Image = this.scene.add.image(0, 0, "health-bar");
   private healthBarFill: Graphics = this.scene.add.graphics();
 
-  public hitArea?: Graphics;
-  private hitAreaState = { debug: false, offset: { x: 0, y: 0.26 } };
+  // hit area only cover player upper body. make enemy easier to hit player
+  public hitArea?: Sprite;
+  private hitAreaState = { debug: false, offset: { y: 0.6, width: 0.5 } };
 
   // Cached geometry/state to avoid per-frame redraws
   private barInitialized = false;
@@ -47,13 +48,13 @@ export default class PlayerWidthCounterComponent extends Container {
 
   private increasePlayerCount: (count: number, gateName: string) => void;
   private removePlayerByName: (name: string) => void;
-  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private currentDepth: number | null = null;
 
   constructor(
     scene: Phaser.Scene,
     playerName: string,
-    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
     depth: number
@@ -72,23 +73,27 @@ export default class PlayerWidthCounterComponent extends Container {
     this.initHealthBar();
     this.createPlayer();
     this.createCollider();
-    this.drawHitArea();
+    this.createHitArea();
   }
 
-  private drawHitArea(): void {
+  private createHitArea(): void {
     if (!this.player) return;
-    const { x, y, displayHeight, displayWidth } = this.player;
+    const { x, y, displayWidth } = this.player;
+    const hitAreaDepth =
+      this.currentDepth! + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max;
 
-    this.hitArea?.clear();
-    this.hitArea = this.scene.add.graphics();
-    this.hitArea.name = this.playerName;
-    this.hitArea.fillStyle(0xff0000, this.hitAreaState.debug ? 0.5 : 0);
-    this.hitArea.fillCircle(
-      x - displayWidth * this.hitAreaState.offset.x,
-      y - displayHeight * (0.5 - this.hitAreaState.offset.y),
-      this.player!.displayWidth * 0.2
+    this.hitArea = this.scene.physics.add.sprite(
+      x,
+      y - this.hitAreaState.offset.y * displayWidth,
+      "invisible-hitArea"
     );
-    this.hitArea.setDepth(this.currentDepth! + this.depth + 10);
+    this.hitArea.setDisplaySize(
+      displayWidth * this.hitAreaState.offset.width,
+      displayWidth * this.hitAreaState.offset.width
+    );
+    this.hitArea.setOrigin(0.5, 0);
+    this.hitArea.setDepth(hitAreaDepth);
+    this.hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
   }
 
   private initHealthBar(): void {
@@ -289,10 +294,9 @@ export default class PlayerWidthCounterComponent extends Container {
     this.healthBarBorder.destroy();
     this.healthBar.destroy();
     this.healthBarFill.destroy();
+    this.hitArea?.destroy();
     if (this.player) {
       this.player.destroy(true);
-      this.hitArea?.clear();
-      this.hitArea?.destroy();
     }
     super.destroy(true);
   }
@@ -300,7 +304,6 @@ export default class PlayerWidthCounterComponent extends Container {
   public decreaseBlood() {
     const { damage } = enemyPreset;
     this.blood -= damage;
-
     if (this.blood <= 0) {
       if (this.blood < 0) this.blood = 0;
       this.removePlayerByName(this.playerName);
@@ -320,9 +323,13 @@ export default class PlayerWidthCounterComponent extends Container {
     const currentX = left + position.x * gap + randomX;
     const currentY = top + position.y * gap + randomY + this.tweenProperty.y;
 
-    this.player!.setDepth(this.currentDepth! + position.depth);
-    this.player!.setPosition(currentX + offset, currentY + offsetY);
+    this.player?.setPosition(currentX + offset, currentY + offsetY);
+    this.hitArea?.setPosition(
+      currentX + offset,
+      currentY +
+        offsetY -
+        this.hitAreaState.offset.y * this.player!.displayWidth
+    );
     this.createHealthBar(currentX + offset, currentY + offsetY);
-    this.drawHitArea();
   }
 }

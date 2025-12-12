@@ -222,7 +222,7 @@ export default class SceneLayoutManager {
     this.layoutContainers.gate.increaseGateCountByName(gate.name);
   }
 
-  public decreasePlayerBlood(playerHitArea: Graphics, enemy: Sprite): void {
+  public decreasePlayerBlood(playerHitArea: Sprite, enemy: Sprite): void {
     if (enemy.name.startsWith("boss")) {
       // this.layoutContainers.enemy.removeStateByName(enemy.name);
       this.layoutContainers.player.removeAllPlayers();

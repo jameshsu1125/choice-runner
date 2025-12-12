@@ -45,7 +45,7 @@ export default class EnemyWithCounterComponent extends Container {
 
   private removeStateByName: (name: string) => void;
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void;
+  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
   private sheetName: string = "";
 
@@ -57,7 +57,7 @@ export default class EnemyWithCounterComponent extends Container {
     config: (typeof enemyEntityConfig)[number]["data"],
     removeStateByName: (name: string) => void,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Graphics, enemy: Sprite) => void,
+    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
@@ -208,7 +208,7 @@ export default class EnemyWithCounterComponent extends Container {
         );
         this.scene.physics.add.overlap(
           enemy,
-          player.player,
+          player.hitArea,
           () => {
             if (this.isDestroyed) return;
             this.decreasePlayerBlood(player.hitArea!, enemy);
