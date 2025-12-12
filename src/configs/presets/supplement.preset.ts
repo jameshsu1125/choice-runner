@@ -33,7 +33,7 @@ export const supplementEntityConfig: {
 export const supplementEntityPresetConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" };
-}[] = randomRange(-9000, 0, 6).map((time) => {
+}[] = randomRange(-9000, 0, 2).map((time) => {
   return {
     time,
     data: {

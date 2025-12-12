@@ -47,7 +47,7 @@ export const GAME_MECHANIC_CONFIG_SCHEMA: GameMechanicConfigSchema = {
     default: false, // Set to true to use fullscreen defeat image
   },
   useSupplementAtlas: {
-    default: true, // Set to false to use single supplement.png image instead of atlas
+    default: false, // Set to false to use single supplement.png image instead of atlas
   },
   showCtaButton: {
     default: true, // Set to false to hide the PLAY NOW button

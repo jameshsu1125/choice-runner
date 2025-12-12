@@ -98,7 +98,7 @@ export default class SupplementWithCounterComponent extends Container {
       key: "breaking",
       frames: this.scene.anims.generateFrameNames("supplementBrokenSheet", {
         prefix: "",
-        start: 1,
+        start: 0,
         end: 14,
         zeroPad: 3,
       }),
@@ -152,11 +152,11 @@ export default class SupplementWithCounterComponent extends Container {
         key: "rolling",
         frames: this.scene.anims.generateFrameNames("supplementSheet", {
           prefix: "",
-          start: 0,
-          end: 11,
+          start: 1,
+          end: 12,
           zeroPad: 3,
         }),
-        frameRate: 9,
+        frameRate: 12,
         repeat: -1,
       });
     } else {
@@ -226,7 +226,6 @@ export default class SupplementWithCounterComponent extends Container {
 
     this.bucket?.setPosition(x, y);
     this.text?.setPosition(x, y);
-
     this.bucketBroken?.setPosition(x, y - this.bucket!.displayHeight * 0.23);
 
     const itemY = y - this.bucket!.displayHeight * 0.5 + offsetY * scale;
@@ -331,7 +330,6 @@ export default class SupplementWithCounterComponent extends Container {
     const y =
       (this.scene.scale.height + Math.abs(bucket.displayHeight)) *
       currentPercent;
-
     this.setPxy(x, y, bucketScale);
 
     const missPositionY =
