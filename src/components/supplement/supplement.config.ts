@@ -23,7 +23,7 @@ export const hitSupplementEffect = (items: (Sprite | Image)[]) => {
   const holdDuration = 10; // Duration to hold the white flash effect
 
   // Animate each item with its own scale to prevent scale conflicts
-  items.forEach((gameObject) => {
+  items.forEach((gameObject, index) => {
     const originalScaleX = gameObject.scaleX;
     const originalScaleY = gameObject.scaleY;
 
@@ -31,15 +31,19 @@ export const hitSupplementEffect = (items: (Sprite | Image)[]) => {
       targets: gameObject,
       scaleX: originalScaleX * 1.05, // Use each object's own scale
       scaleY: originalScaleY * 1.05,
-      duration: 10,
+      duration: 100,
       hold: holdDuration,
       yoyo: true,
       ease: "Power2",
       onStart: () => {
-        gameObject.setTintFill(supplementPreset.hitColor); // White flash for this object
+        if (index === 0) {
+          gameObject.setTint(supplementPreset.hitColor); // White flash for this object
+        }
       },
       onYoyo: () => {
-        gameObject.clearTint(); // Remove tint on return for this object
+        if (index === 0) {
+          gameObject.clearTint(); // Remove tint on return for this object
+        }
       },
     });
   });

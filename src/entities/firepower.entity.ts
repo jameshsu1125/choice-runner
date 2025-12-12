@@ -17,7 +17,6 @@ export default class FirepowerEntity {
 
   public update(time: number, delta: number): void {
     if (!this.isStarted) return;
-    return;
     const { reload } = firepowerPreset;
 
     const index = Math.floor((time - this.state.startTime) / reload);
