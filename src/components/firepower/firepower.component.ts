@@ -205,21 +205,6 @@ export class FirepowerComponent extends Container {
 
     layoutContainers.supplement.supplementState.forEach((state) => {
       if (state.target.bucket) {
-        this.scene.physics.add.collider(
-          firepower,
-          state.target.bucket!,
-          () => {
-            if (hasCollided || !firepower.active) return;
-            hasCollided = true;
-            this.decreaseSupplementCount(
-              state.target.supplementName,
-              firepower
-            );
-          },
-          undefined,
-          this.scene
-        );
-
         this.scene.physics.add.overlap(
           firepower,
           state.target.bucket!,

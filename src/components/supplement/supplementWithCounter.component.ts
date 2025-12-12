@@ -224,9 +224,10 @@ export default class SupplementWithCounterComponent extends Container {
 
     const { offsetY } = preset;
 
-    this.bucket?.setPosition(x, y);
     this.text?.setPosition(x, y);
     this.bucketBroken?.setPosition(x, y - this.bucket!.displayHeight * 0.23);
+    this.bucket?.setPosition(x, y);
+    this.bucket?.refreshBody();
 
     const itemY = y - this.bucket!.displayHeight * 0.5 + offsetY * scale;
     this.item?.setPosition(x, itemY);
@@ -290,8 +291,9 @@ export default class SupplementWithCounterComponent extends Container {
       );
     } else {
       this.text?.setText(`${this.num}`);
-      if (this.bucket && this.item)
+      if (this.bucket && this.item) {
         hitSupplementEffect([this.bucket, this.item]);
+      }
     }
   }
 
