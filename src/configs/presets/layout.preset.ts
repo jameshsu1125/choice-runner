@@ -49,7 +49,6 @@ export const playerPreset = {
   ratio: (30 / 320) * 1.2, // 大小比例
   offsetY: -450, // Y轴偏移
   gap: 120, //  玩家間距
-  isRadom: false, // 是否隨機位置
   randomGap: 40, // 隨機位置間距
   healthBar: {
     offsetY: 40, // Y轴偏移

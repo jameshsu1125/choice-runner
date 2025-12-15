@@ -17,14 +17,6 @@ import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
-  private randomOffset = {
-    x:
-      -playerPreset.randomGap * 0.5 +
-      Math.random() * -playerPreset.randomGap * 0.5,
-    y:
-      -playerPreset.randomGap * 0.5 +
-      Math.random() * -playerPreset.randomGap * 0.5,
-  };
   public tweenProperty = { y: -20 };
 
   public playerName: string;
@@ -312,16 +304,13 @@ export default class PlayerWidthCounterComponent extends Container {
 
   public setPositionByIndex(index: number, offset: number) {
     if (this.player === null || this.isDestroyed) return;
-    const { gap, offsetY, isRadom } = playerPreset;
+    const { gap, offsetY } = playerPreset;
 
     const position = playerFormation[index] || { x: 0, y: 0, depth: 0 };
     const { left, top } = getAlign(this.player!, "CENTER_BOTTOM");
 
-    const randomX = isRadom ? this.randomOffset.x : 0;
-    const randomY = isRadom ? this.randomOffset.y : 0;
-
-    const currentX = left + position.x * gap + randomX;
-    const currentY = top + position.y * gap + randomY + this.tweenProperty.y;
+    const currentX = left + position.x * gap;
+    const currentY = top + position.y * gap + this.tweenProperty.y;
 
     this.player?.setPosition(currentX + offset, currentY + offsetY);
     this.hitArea?.setPosition(

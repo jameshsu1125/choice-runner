@@ -1,17 +1,16 @@
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import {
+  Container,
+  CursorKeys,
+  Sprite,
+} from "../../configs/constants/constants";
 import {
   GAME_MECHANIC_CONFIG_SCHEMA,
   GAME_MECHANIC_CONSTANTS,
 } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
+import { getDepthByOptions } from "../../managers/layout/depth.manager";
 import PlayerWidthCounterComponent from "./playerWidthCounter.component";
-import {
-  Container,
-  CursorKeys,
-  Graphics,
-  Sprite,
-} from "../../configs/constants/constants";
 
 export class PlayerComponent extends Container {
   public players: PlayerWidthCounterComponent[] = [];
