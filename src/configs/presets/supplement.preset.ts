@@ -4,7 +4,7 @@ import { TQuadrant } from "../constants/constants";
 // config need to split before and after game start for stage deploy.
 const supplementState = {
   count: {
-    before: { min: 1, max: 3 }, // practice time should be easier
+    before: { min: 1, max: 4 }, // practice time should be easier
     after: { min: 5, max: 15 },
   },
   deploy: {
