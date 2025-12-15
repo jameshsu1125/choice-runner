@@ -85,6 +85,7 @@ export const enemyPreset = {
 
 export const gatePreset = {
   missOffsetY: 220, // Ratio to adjust the position of the gate when it is missed
+  shouldRemoveCollisionOnMax: false,
   ratio: 160 / 320,
   get duration() {
     return GAME_MECHANIC_CONSTANTS.enemySpeed;

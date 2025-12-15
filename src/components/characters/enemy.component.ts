@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Container, Graphics, Sprite } from "../../configs/constants/constants";
 import {
-  enemyEntityConfig,
+  enemyAfterConfig,
   enemyEntityPresetConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
@@ -49,12 +49,12 @@ export class EnemyComponent extends Container {
     });
   }
 
-  public fire(time: number, config: (typeof enemyEntityConfig)[number]): void {
+  public fire(time: number, config: (typeof enemyAfterConfig)[number]): void {
     this.createEnemy(config.data, time);
   }
 
   private createEnemy(
-    config: (typeof enemyEntityConfig)[number]["data"],
+    config: (typeof enemyAfterConfig)[number]["data"],
     time: number
   ): void {
     const name = `${config.blood.type}-${this.index++}`;

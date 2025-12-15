@@ -1,50 +1,60 @@
-import { randomRange } from "../../utils/misc.utils";
+import { randomQuadrant } from "../../utils/misc.utils";
 import { TQuadrant } from "../constants/constants";
 
-export const supplementEntityConfig: {
+// config need to split before and after game start for stage deploy.
+const supplementState = {
+  count: {
+    before: { min: 1, max: 3 }, // practice time should be easier
+    after: { min: 5, max: 15 },
+  },
+  deploy: {
+    before: [-5000],
+    after: [5000, 15000, 25000],
+  },
+};
+
+export const supplementAfterConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" };
-}[] = randomRange(0, 25000, 6).map(() => {
-  return {
-    time: 0 + Math.floor(Math.random() * 25000),
-    data: {
-      type: Math.random() > 0.5 ? "ARMY" : "GUN",
-      quadrant: Math.floor(-1 + Math.random() * 2) as TQuadrant,
-      count: Math.floor(1 + Math.random() * 10),
-    },
-  };
-});
+}[] = supplementState.deploy.after
+  .map((time, index) => {
+    const quadrant = randomQuadrant();
+    return [...new Array(2).keys()].map((i) => ({
+      time,
+      data: {
+        type: "ARMY" as const,
+        quadrant: quadrant[i] || (0 as TQuadrant),
+        count:
+          Math.floor(
+            supplementState.count.after.min +
+              Math.random() *
+                (supplementState.count.after.max -
+                  supplementState.count.after.min)
+          ) *
+          (index + 1),
+      },
+    }));
+  })
+  .flat();
 
-// [
-//   {
-//     time: 5000,
-//     data: { quadrant: 0, count: 10, type: "ARMY" },
-//   },
-//   {
-//     time: 15000,
-//     data: { quadrant: 1, count: 15, type: "ARMY" },
-//   },
-//   {
-//     time: 25000,
-//     data: { quadrant: -1, count: 20, type: "ARMY" },
-//   },
-// ];
-
-export const supplementEntityPresetConfig: {
+export const supplementEntityBeforeConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" };
-}[] = randomRange(-9000, 0, 2).map((time) => {
-  return {
-    time,
-    data: {
-      type: Math.random() > 0.5 ? "ARMY" : "GUN",
-      quadrant: Math.floor(-1 + Math.random() * 2) as TQuadrant,
-      count: Math.floor(1 + Math.random() * 10),
-    },
-  };
-});
-
-// [
-//   { time: -5000, data: { quadrant: -1, count: 4, type: "ARMY" } },
-//   { time: -5000, data: { quadrant: 1, count: 3, type: "GUN" } },
-// ];
+}[] = supplementState.deploy.before
+  .map((time) => {
+    const quadrant = randomQuadrant();
+    return [...new Array(2).keys()].map((i) => ({
+      time,
+      data: {
+        type: (i === 0 ? "ARMY" : "GUN") as "ARMY" | "GUN",
+        quadrant: quadrant[i] || (0 as TQuadrant),
+        count: Math.floor(
+          supplementState.count.before.min +
+            Math.random() *
+              (supplementState.count.before.max -
+                supplementState.count.before.min)
+        ),
+      },
+    }));
+  })
+  .flat();

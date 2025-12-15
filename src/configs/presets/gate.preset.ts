@@ -1,57 +1,58 @@
-import { randomRange } from "../../utils/misc.utils";
+import { randomQuadrant } from "../../utils/misc.utils";
 import { TQuadrant } from "../constants/constants";
 
-export const gateEntityConfig: {
+// config need to split before and after game start for stage deploy.
+const gateState = {
+  count: {
+    before: { min: -2, max: 2 }, // practice time should be easier
+    after: { min: -10, max: 10 },
+  },
+  deploy: {
+    before: [], // no gate before game start
+    after: [0, 10000, 20000],
+  },
+};
+
+export const gateEntityAfterConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
-}[] = randomRange(0, 20000, 6).map(() => {
-  return {
-    time: 0 + Math.floor(Math.random() * 20000),
-    data: {
-      type: "gate",
-      quadrant: Math.floor(-1 + Math.random() * 2) as TQuadrant,
-      count: Math.floor(-10 + Math.random() * 20),
-    },
-  };
-});
+}[] = gateState.deploy.after
+  .map((time, index) => {
+    const quadrant = randomQuadrant();
+    return [...new Array(2).keys()].map((i) => ({
+      time: time + i,
+      data: {
+        type: "gate" as const,
+        quadrant: quadrant[i] || (0 as TQuadrant),
+        count:
+          Math.floor(
+            gateState.count.after.min +
+              Math.random() *
+                (gateState.count.after.max - gateState.count.after.min)
+          ) *
+          (index + 1),
+      },
+    }));
+  })
+  .flat();
 
-// [
-//   {
-//     time: 0,
-//     data: { quadrant: 1, count: -3, type: "gate" },
-//   },
-//   {
-//     time: 0,
-//     data: { quadrant: -1, count: 1, type: "gate" },
-//   },
-//   {
-//     time: 10000,
-//     data: { quadrant: 1, count: 1, type: "gate" },
-//   },
-//   {
-//     time: 10000,
-//     data: { quadrant: 1, count: 1, type: "gate" },
-//   },
-//   {
-//     time: 20000,
-//     data: { quadrant: 1, count: 1, type: "gate" },
-//   },
-//   {
-//     time: 20000,
-//     data: { quadrant: -1, count: -3, type: "gate" },
-//   },
-// ];
-
-export const gateEntityPresetConfig: {
+export const gateEntityBeforeConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
-}[] = randomRange(-8000, 0, 0).map((time) => {
-  return {
-    time,
-    data: {
-      type: "gate",
-      quadrant: Math.floor(-1 + Math.random() * 2) as TQuadrant,
-      count: Math.floor(-10 + Math.random() * 20),
-    },
-  };
-});
+}[] = gateState.deploy.before
+  .map((time) => {
+    const quadrant = randomQuadrant();
+    return [...new Array(2).keys()].map((index) => ({
+      time,
+      data: {
+        type: "gate" as const,
+        quadrant: quadrant[index] || (0 as TQuadrant),
+        count: Math.floor(
+          gateState.count.before.min +
+            Math.random() *
+              (gateState.count.before.max - gateState.count.before.min)
+        ),
+      },
+    }));
+  })
+  .flat();

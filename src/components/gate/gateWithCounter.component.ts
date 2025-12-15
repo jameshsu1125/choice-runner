@@ -165,7 +165,10 @@ export default class GateWithCounterComponent extends Container {
     const { maxCount } = gatePreset;
 
     this.text.setText(
-      `${this.num > 0 ? "+" : this.num < 0 ? "-" : ""}${Math.abs(this.num)}`
+      `${this.num > 0 ? "+" : this.num < 0 ? "-" : ""}${Math.min(
+        Math.abs(this.num),
+        maxCount
+      )}`
     );
 
     if (this.num >= maxCount) {
@@ -180,7 +183,9 @@ export default class GateWithCounterComponent extends Container {
 
     this.num = Math.min(this.num + 1, maxCount);
     if (this.num >= maxCount) {
-      if (this.gate) hitGateEffect(this.gate, false);
+      if (this.gate) {
+        hitGateEffect(this.gate, false);
+      }
     } else {
       if (this.gate) hitGateEffect(this.gate, false);
     }

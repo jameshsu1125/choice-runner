@@ -27,6 +27,7 @@ export const hitSupplementEffect = (items: (Sprite | Image)[]) => {
     const originalScaleX = gameObject.scaleX;
     const originalScaleY = gameObject.scaleY;
 
+    if (scene.tweens.isTweening(gameObject)) return;
     scene.tweens.add({
       targets: gameObject,
       scaleX: originalScaleX * 1.05, // Use each object's own scale

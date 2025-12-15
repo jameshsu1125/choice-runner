@@ -2,7 +2,7 @@ import { getDepthByOptions } from "@/managers/layout/depth.manager";
 import { Container, Graphics, Sprite } from "../../configs/constants/constants";
 import { GAME_MECHANIC_CONSTANTS } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { Easing } from "../../configs/constants/layout.constants";
-import { enemyEntityConfig } from "../../configs/presets/enemy.preset";
+import { enemyAfterConfig } from "../../configs/presets/enemy.preset";
 import {
   enemyPreset,
   firepowerPreset,
@@ -49,12 +49,12 @@ export default class EnemyWithCounterComponent extends Container {
   private onGameVictory: () => void;
   private sheetName: string = "";
 
-  private config?: (typeof enemyEntityConfig)[number]["data"];
+  private config?: (typeof enemyAfterConfig)[number]["data"];
 
   constructor(
     scene: Phaser.Scene,
     name: string,
-    config: (typeof enemyEntityConfig)[number]["data"],
+    config: (typeof enemyAfterConfig)[number]["data"],
     removeStateByName: (name: string) => void,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
     decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,

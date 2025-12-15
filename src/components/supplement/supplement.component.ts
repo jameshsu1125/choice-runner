@@ -5,8 +5,8 @@ import {
   supplementPreset,
 } from "../../configs/presets/layout.preset";
 import {
-  supplementEntityConfig,
-  supplementEntityPresetConfig,
+  supplementAfterConfig,
+  supplementEntityBeforeConfig,
 } from "../../configs/presets/supplement.preset";
 import { TConfig, TSupplementState } from "./supplement.config";
 import SupplementWithCounterComponent from "./supplementWithCounter.component";
@@ -36,7 +36,7 @@ export class SupplementComponent extends Container {
 
   private buildBeforeStart(): void {
     const { duration } = supplementPreset;
-    supplementEntityPresetConfig.reverse().forEach((cfg) => {
+    supplementEntityBeforeConfig.reverse().forEach((cfg) => {
       const currentConfig = {
         quadrant: cfg.data.quadrant,
         count: cfg.data.count,
@@ -54,7 +54,7 @@ export class SupplementComponent extends Container {
 
   public fire(
     time: number,
-    config: (typeof supplementEntityConfig)[number]
+    config: (typeof supplementAfterConfig)[number]
   ): void {
     this.createSupplement(config.data, time);
   }

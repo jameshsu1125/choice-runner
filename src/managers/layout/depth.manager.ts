@@ -1,16 +1,16 @@
 import { GAME_MECHANIC_CONFIG_SCHEMA } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import {
-  enemyEntityConfig,
+  enemyAfterConfig,
   enemyEntityPresetConfig,
 } from "../../configs/presets/enemy.preset";
 import { finishLineEntityConfig } from "../../configs/presets/finishLne.preset";
 import {
-  gateEntityConfig,
-  gateEntityPresetConfig,
+  gateEntityAfterConfig,
+  gateEntityBeforeConfig,
 } from "../../configs/presets/gate.preset";
 import {
-  supplementEntityConfig,
-  supplementEntityPresetConfig,
+  supplementAfterConfig,
+  supplementEntityBeforeConfig,
 } from "../../configs/presets/supplement.preset";
 
 type DepthType =
@@ -24,10 +24,10 @@ type DepthType =
 
 const totalDepth =
   enemyEntityPresetConfig.length +
-  enemyEntityConfig.length +
-  gateEntityPresetConfig.length +
-  supplementEntityConfig.length +
-  supplementEntityPresetConfig.length +
+  enemyAfterConfig.length +
+  gateEntityBeforeConfig.length +
+  supplementAfterConfig.length +
+  supplementEntityBeforeConfig.length +
   finishLineEntityConfig.length; // number should > all character total count
 
 const depthState = {
@@ -65,12 +65,12 @@ export const getDepthByOptions = (type: DepthType, time?: number) => {
 
   const sortedPresetConfig = [
     ...enemyEntityPresetConfig,
-    ...enemyEntityConfig,
+    ...enemyAfterConfig,
     ...finishLineEntityConfig,
-    ...gateEntityPresetConfig,
-    ...gateEntityConfig,
-    ...supplementEntityPresetConfig,
-    ...supplementEntityConfig,
+    ...gateEntityBeforeConfig,
+    ...gateEntityAfterConfig,
+    ...supplementEntityBeforeConfig,
+    ...supplementAfterConfig,
   ]
     .sort((a, b) => b.time - a.time)
     .map((cfg, index) => ({ ...cfg, index }));

@@ -1,4 +1,4 @@
-import { enemyEntityConfig } from "../configs/presets/enemy.preset";
+import { enemyAfterConfig } from "../configs/presets/enemy.preset";
 import { gamePreset } from "../configs/presets/layout.preset";
 import SceneLayoutManager from "../managers/layout/scene-layout.manager";
 import ServiceLocator from "../services/service-locator/service-locator.service";
@@ -8,7 +8,7 @@ import ServiceLocator from "../services/service-locator/service-locator.service"
  */
 export default class EnemyEntity {
   private state = { startTime: 0, index: -1 };
-  private entityConfig = enemyEntityConfig.map((cfg, index) => ({
+  private entityConfig = enemyAfterConfig.map((cfg, index) => ({
     ...cfg,
     index: index + 1,
   }));

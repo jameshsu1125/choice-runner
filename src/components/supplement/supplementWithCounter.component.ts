@@ -26,7 +26,7 @@ export default class SupplementWithCounterComponent extends Container {
   public isDestroyed = false;
   public supplementName: string;
 
-  private num = 0;
+  public num = 0;
 
   // items
   public bucket?: Sprite;

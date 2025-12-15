@@ -1,11 +1,11 @@
-import { gateEntityConfig } from "../configs/presets/gate.preset";
+import { gateEntityAfterConfig } from "../configs/presets/gate.preset";
 import { gamePreset } from "../configs/presets/layout.preset";
 import SceneLayoutManager from "../managers/layout/scene-layout.manager";
 import ServiceLocator from "../services/service-locator/service-locator.service";
 
 export default class GateEntity {
   private state = { startTime: 0, index: -1 };
-  private entityConfig = gateEntityConfig.map((cfg, index) => ({
+  private entityConfig = gateEntityAfterConfig.map((cfg, index) => ({
     ...cfg,
     index: index + 1,
   }));

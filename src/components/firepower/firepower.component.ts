@@ -4,6 +4,7 @@ import { GAME_MECHANIC_CONSTANTS } from "../../configs/constants/game-mechanic/g
 import {
   firepowerPreset,
   gamePreset,
+  gatePreset,
 } from "../../configs/presets/layout.preset";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
@@ -173,6 +174,9 @@ export class FirepowerComponent extends Container {
 
     layoutContainers.gate.gateState.forEach((state) => {
       if (state.target.gate) {
+        const { maxCount, shouldRemoveCollisionOnMax } = gatePreset;
+        if (shouldRemoveCollisionOnMax && state.target.num >= maxCount) return;
+
         this.scene.physics.add.overlap(
           firepower,
           state.target.gate,
