@@ -5,8 +5,8 @@ import {
   TQuadrant,
 } from "../../configs/constants/constants";
 import {
-  gateEntityAfterConfig,
-  gateEntityBeforeConfig,
+  gateAfterConfig,
+  gateBeforeConfig,
 } from "../../configs/presets/gate.preset";
 import { gatePreset } from "../../configs/presets/layout.preset";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
@@ -36,7 +36,7 @@ export class GateComponent extends Container {
 
   private buildBeforeStart(): void {
     const { duration } = gatePreset;
-    gateEntityBeforeConfig.reverse().forEach((cfg) => {
+    gateBeforeConfig.reverse().forEach((cfg) => {
       const currentConfig = {
         quadrant: cfg.data.quadrant,
         count: cfg.data.count,
@@ -51,10 +51,7 @@ export class GateComponent extends Container {
     });
   }
 
-  public fire(
-    time: number,
-    config: (typeof gateEntityAfterConfig)[number]
-  ): void {
+  public fire(time: number, config: (typeof gateAfterConfig)[number]): void {
     this.createGate(config.data, time);
   }
 

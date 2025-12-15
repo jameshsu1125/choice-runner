@@ -1,5 +1,5 @@
-import { supplementPreset } from "../../configs/presets/layout.preset";
 import { Image, Sprite, TQuadrant } from "../../configs/constants/constants";
+import { supplementPreset } from "../../configs/presets/layout.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import SupplementWithCounterComponent from "./supplementWithCounter.component";

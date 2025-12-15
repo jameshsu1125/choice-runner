@@ -3,55 +3,55 @@ import { GAME_MECHANIC_CONSTANTS } from "../constants/game-mechanic/game-mechani
 export const gamePreset = {
   perspective: 0.1,
   delta: 16, // default delta when game are not lag
-  preventJumpTime: 500, // (ms)如果太lag到時間差超過這個值，則不新增實體避免閃現
+  preventJumpTime: 500, // If lag causes time difference to exceed this value, don't spawn entities to avoid flickering
   gameVictoryDelay: 1000,
 };
 
 export const logoPreset = {
-  ratio: 99 / 320, // 大小比例
+  ratio: 99 / 320, // size ratio
 };
 
 export const landingPreset = {
   finger: {
-    ratio: 61 / 320, // 大小比例
+    ratio: 61 / 320, // size ratio
   },
   leftArrow: {
-    ratio: 114 / 320, // 大小比例
-    offsetY: -80, // Y轴偏移
+    ratio: 114 / 320, // size ratio
+    offsetY: -80, // Y-axis offset
   },
   rightArrow: {
-    ratio: 114 / 320, // 大小比例
-    offsetY: -80, // Y轴偏移
+    ratio: 114 / 320, // size ratio
+    offsetY: -80, // Y-axis offset
   },
 };
 
 export const firepowerPreset = {
-  perspective: 80, // 透视效果
-  offsetY: -40, // Y轴偏移
-  speed: 3200, // 子弹速度
-  reload: 500, // 子彈間隔 ms
+  perspective: 80, // perspective effect
+  offsetY: -40, // Y-axis offset
+  speed: 3200, // bullet speed
+  reload: 500, // bullet interval ms
   ratio: {
-    level1: 9 / 320, // 大小比例
-    level2: 17 / 320, // 大小比例
+    level1: 9 / 320, // size ratio
+    level2: 17 / 320, // size ratio
   },
   damage: {
-    level1: 50, // 伤害值
-    level2: 100, // 伤害值
+    level1: 50, // damage value
+    level2: 100, // damage value
   },
   random: {
-    enable: false, // 是否启用随機
-    velocity: 200, // 随機x轴偏移
+    enable: false, // whether to enable randomness
+    velocity: 200, // random x-axis offset
   },
 };
 
 export const playerPreset = {
-  speedByInput: 5, // 玩家移動速度
-  ratio: (30 / 320) * 1.2, // 大小比例
-  offsetY: -450, // Y轴偏移
-  gap: 120, //  玩家間距
-  randomGap: 40, // 隨機位置間距
+  speedByInput: 5, // player movement speed
+  ratio: (30 / 320) * 1.2, // size ratio
+  offsetY: -450, // Y-axis offset
+  gap: 120, //  player gap
+  randomGap: 40, // random position gap
   healthBar: {
-    offsetY: 40, // Y轴偏移
+    offsetY: 40, // Y-axis offset
     width: 280,
     height: 100,
   },

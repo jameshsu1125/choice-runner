@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { Container, Sprite } from "../../configs/constants/constants";
 import {
   enemyAfterConfig,
-  enemyEntityPresetConfig,
+  enemyBeforeConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
@@ -35,7 +35,7 @@ export class EnemyComponent extends Container {
 
   public buildBeforeStart(): void {
     const { duration } = enemyPreset;
-    enemyEntityPresetConfig.reverse().forEach((cfg) => {
+    enemyBeforeConfig.reverse().forEach((cfg) => {
       const { data } = cfg;
       this.createEnemy(data, cfg.time);
     });

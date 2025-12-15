@@ -13,7 +13,7 @@ const gateState = {
   },
 };
 
-export const gateEntityAfterConfig: {
+export const gateAfterConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
 }[] = gateState.deploy.after
@@ -36,7 +36,7 @@ export const gateEntityAfterConfig: {
   })
   .flat();
 
-export const gateEntityBeforeConfig: {
+export const gateBeforeConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
 }[] = gateState.deploy.before

@@ -1,17 +1,19 @@
 import { GAME_MECHANIC_CONFIG_SCHEMA } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import {
   enemyAfterConfig,
-  enemyEntityPresetConfig,
+  enemyBeforeConfig,
 } from "../../configs/presets/enemy.preset";
-import { finishLineEntityConfig } from "../../configs/presets/finishLne.preset";
+import { finishLineConfig } from "../../configs/presets/finishLne.preset";
 import {
-  gateEntityAfterConfig,
-  gateEntityBeforeConfig,
+  gateAfterConfig,
+  gateBeforeConfig,
 } from "../../configs/presets/gate.preset";
 import {
   supplementAfterConfig,
-  supplementEntityBeforeConfig,
+  supplementBeforeConfig,
 } from "../../configs/presets/supplement.preset";
+
+// Define depth values for all layout elements
 
 type DepthType =
   | "character"
@@ -23,12 +25,12 @@ type DepthType =
   | "player";
 
 const totalDepth =
-  enemyEntityPresetConfig.length +
+  enemyBeforeConfig.length +
   enemyAfterConfig.length +
-  gateEntityBeforeConfig.length +
+  gateBeforeConfig.length +
   supplementAfterConfig.length +
-  supplementEntityBeforeConfig.length +
-  finishLineEntityConfig.length; // number should > all character total count
+  supplementBeforeConfig.length +
+  finishLineConfig.length; // number should > all character total count
 
 const depthState = {
   finishLine: 1,
@@ -63,13 +65,13 @@ export const getDepthByOptions = (type: DepthType, time?: number) => {
     }
   }
 
-  const sortedPresetConfig = [
-    ...enemyEntityPresetConfig,
+  const sortedConfig = [
+    ...enemyBeforeConfig,
     ...enemyAfterConfig,
-    ...finishLineEntityConfig,
-    ...gateEntityBeforeConfig,
-    ...gateEntityAfterConfig,
-    ...supplementEntityBeforeConfig,
+    ...finishLineConfig,
+    ...gateBeforeConfig,
+    ...gateAfterConfig,
+    ...supplementBeforeConfig,
     ...supplementAfterConfig,
   ]
     .sort((a, b) => b.time - a.time)
@@ -77,6 +79,6 @@ export const getDepthByOptions = (type: DepthType, time?: number) => {
 
   depthState.character -= 1;
 
-  const resultConfig = sortedPresetConfig.filter((cfg) => cfg.time === time);
+  const resultConfig = sortedConfig.filter((cfg) => cfg.time === time);
   return resultConfig[0]?.index || depthState.character;
 };

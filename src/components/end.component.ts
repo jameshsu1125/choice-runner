@@ -1,4 +1,3 @@
-import { getDepthByOptions } from "../managers/layout/depth.manager";
 import {
   Container,
   Image,
@@ -7,6 +6,7 @@ import {
 } from "../configs/constants/constants";
 import { GAME_MECHANIC_CONSTANTS } from "../configs/constants/game-mechanic/game-mechanic.constants";
 import { endPreset } from "../configs/presets/layout.preset";
+import { getDepthByOptions } from "../managers/layout/depth.manager";
 import {
   getDisplayPositionAlign as getAlign,
   getDisplaySizeByWidthPercentage as getSize,

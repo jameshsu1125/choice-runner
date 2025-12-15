@@ -1,6 +1,5 @@
 import {
   Container,
-  Graphics,
   Image,
   Scene,
   Sprite,
@@ -20,7 +19,7 @@ import {
   hitSupplementEffect,
   TConfig,
   TSupplementType,
-} from "./supplement.config";
+} from "./supplement.misc";
 
 export default class SupplementWithCounterComponent extends Container {
   public isDestroyed = false;

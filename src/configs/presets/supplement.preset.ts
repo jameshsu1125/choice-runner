@@ -37,7 +37,7 @@ export const supplementAfterConfig: {
   })
   .flat();
 
-export const supplementEntityBeforeConfig: {
+export const supplementBeforeConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "ARMY" | "GUN" };
 }[] = supplementState.deploy.before

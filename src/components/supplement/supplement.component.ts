@@ -6,11 +6,11 @@ import {
 } from "../../configs/presets/layout.preset";
 import {
   supplementAfterConfig,
-  supplementEntityBeforeConfig,
+  supplementBeforeConfig,
 } from "../../configs/presets/supplement.preset";
-import { TConfig, TSupplementState } from "./supplement.config";
-import SupplementWithCounterComponent from "./supplementWithCounter.component";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { TConfig, TSupplementState } from "./supplement.misc";
+import SupplementWithCounterComponent from "./supplementWithCounter.component";
 
 export class SupplementComponent extends Container {
   private index = 0;
@@ -36,7 +36,7 @@ export class SupplementComponent extends Container {
 
   private buildBeforeStart(): void {
     const { duration } = supplementPreset;
-    supplementEntityBeforeConfig.reverse().forEach((cfg) => {
+    supplementBeforeConfig.reverse().forEach((cfg) => {
       const currentConfig = {
         quadrant: cfg.data.quadrant,
         count: cfg.data.count,

@@ -7,7 +7,7 @@ type TBlood = {
   color: number;
 };
 
-type TEnemyPresetConfig = {
+type TEnemyConfig = {
   time: number;
   data: {
     x: number;
@@ -43,7 +43,7 @@ const boss: TBlood = {
 };
 
 // config need to split before and after game start for stage deploy.
-export const enemyAfterConfig: TEnemyPresetConfig[] = [
+export const enemyAfterConfig: TEnemyConfig[] = [
   ...randomRange(0, 29999, 60).map(() => {
     return {
       time: 0 + Math.floor(Math.random() * 29999),
@@ -60,17 +60,15 @@ export const enemyAfterConfig: TEnemyPresetConfig[] = [
   { time: 30000, data: { x: 220, type: "follow", blood: boss } },
 ];
 
-export const enemyEntityPresetConfig: TEnemyPresetConfig[] = randomRange(
-  -7000,
-  0,
-  5
-).map((time) => {
-  return {
-    time,
-    data: {
-      x: Math.random() * 400,
-      type: Math.random() > 0.5 ? "follow" : "straight",
-      blood: practiceEnemy,
-    },
-  };
-});
+export const enemyBeforeConfig: TEnemyConfig[] = randomRange(-7000, 0, 5).map(
+  (time) => {
+    return {
+      time,
+      data: {
+        x: Math.random() * 400,
+        type: Math.random() > 0.5 ? "follow" : "straight",
+        blood: practiceEnemy,
+      },
+    };
+  }
+);
