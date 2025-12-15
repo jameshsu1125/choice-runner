@@ -13,13 +13,12 @@ import {
   playerPreset,
 } from "../../configs/presets/layout.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
-import MainScene from "../../scenes/main.scene";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import {
   getDisplayPositionAlign as getAlign,
   getDisplaySizeByWidthPercentage as getSize,
 } from "../../utils/layout.utils";
-import { getGateReward, hitGateEffect } from "./gate.config";
+import { getGateReward, hitGateEffect } from "./gate.misc";
 
 export default class GateWithCounterComponent extends Container {
   private isDestroyed = false;

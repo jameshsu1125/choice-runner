@@ -9,9 +9,9 @@ import {
   gateEntityBeforeConfig,
 } from "../../configs/presets/gate.preset";
 import { gatePreset } from "../../configs/presets/layout.preset";
-import { TGateState } from "./gate.config";
-import GateWithCounterComponent from "./gateWithCounter.component";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { TGateState } from "./gate.misc";
+import GateWithCounterComponent from "./gateWithCounter.component";
 
 export class GateComponent extends Container {
   public gateState: TGateState[] = [];

@@ -7,21 +7,22 @@ export type TGateState = {
 };
 
 export const hitGateEffect = (object: Sprite, invalid: boolean) => {
+  const holdDuration = 10; // Duration to hold the white flash effect
+  const hitDuration = 50; // Total duration of the hit effect
+  const currentColor = invalid ? 0x00ffff : 0xffffff; // Cyan for invalid, White for valid
+  const scale = 1.2; // 20% scale up
+
   const { scene } = object;
   const originalScaleX = object.scaleX;
   const originalScaleY = object.scaleY;
-
-  const currentColor = invalid ? 0x00ffff : 0xffffff; // Cyan for invalid, White for valid
-
-  const holdDuration = 10; // Duration to hold the white flash effect
 
   if (scene.tweens.isTweening(object)) return;
 
   scene.tweens.add({
     targets: object,
-    scaleX: originalScaleX * 1.2, // 20% scale up
-    scaleY: originalScaleY * 1.2,
-    duration: 50,
+    scaleX: originalScaleX * scale,
+    scaleY: originalScaleY * scale,
+    duration: hitDuration,
     hold: holdDuration,
     yoyo: true,
     ease: "easeOutQuart",
@@ -34,6 +35,7 @@ export const hitGateEffect = (object: Sprite, invalid: boolean) => {
   });
 };
 
+// get this code from appier team.
 export const getGateReward = (object: Sprite, graphicsName: string) => {
   const currentY = object.y + object.displayHeight * 0.5;
   const particles = object.scene.add.particles(

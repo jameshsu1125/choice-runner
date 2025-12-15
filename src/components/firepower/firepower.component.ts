@@ -237,7 +237,7 @@ export class FirepowerComponent extends Container {
     });
   }
 
-  removeFirepowerByName(name: string): void {
+  public removeFirepowerByName(name: string): void {
     const index = this.firepowerContainer.findIndex((fp) => fp.name === name);
     if (index !== -1) {
       this._removeFirepowerByIndex(index);
@@ -328,9 +328,7 @@ export class FirepowerComponent extends Container {
   }
 
   public destroy(): void {
-    this.firepowerContainer.forEach((firepower) => {
-      firepower.destroy();
-    });
+    this.firepowerContainer.forEach((firepower) => firepower.destroy());
     this.firepowerContainer = [];
     this.bulletPositionTracker.clear();
   }
