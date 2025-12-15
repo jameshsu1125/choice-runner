@@ -21,7 +21,6 @@ export default class MainScene extends Phaser.Scene {
   private finishLineEntity?: FinishLineEntity;
 
   private isGameOver = false;
-  private updateTime: number = 0;
   public zIndex: number = 998;
 
   constructor() {
@@ -119,7 +118,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    this.updateTime = time;
     if (this.isGameOver) return;
     ServiceLocator.get<SceneLayoutManager>("gameAreaManager").update(time);
     this.firepowerEntity?.update(time, delta);

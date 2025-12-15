@@ -1,12 +1,12 @@
 import Phaser from "phaser";
-import { Container, Graphics, Sprite } from "../../configs/constants/constants";
+import { Container, Sprite } from "../../configs/constants/constants";
 import {
   enemyAfterConfig,
   enemyEntityPresetConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
 import { getDepthByOptions } from "../../managers/layout/depth.manager";
-import { TEnemyState } from "./enemy.config";
+import { TEnemyState } from "./enemy.misc";
 import EnemyWidthCounterComponent from "./enemyWithCounter.component";
 
 export class EnemyComponent extends Container {
@@ -30,7 +30,6 @@ export class EnemyComponent extends Container {
     this.onGameVictory = onGameVictory;
     this.setPosition(-scene.scale.width / 2, -scene.scale.height / 2);
 
-    // requestAnimationFrame(() => this.buildBeforeStart());
     this.buildBeforeStart();
   }
 
@@ -70,11 +69,7 @@ export class EnemyComponent extends Container {
     );
 
     enemy.setDepths(getDepthByOptions("character", time));
-
-    this.enemyState.push({
-      startTime: time,
-      target: enemy,
-    });
+    this.enemyState.push({ startTime: time, target: enemy });
   }
 
   public removeStateByName(name: string): void {

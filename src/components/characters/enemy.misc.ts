@@ -7,22 +7,25 @@ export type TEnemyState = {
 };
 
 export const hitEnemyEffect = (enemy: Sprite) => {
+  const holdDuration = 10; // Duration to hold the white flash effect
+  const scaleUpFactor = 1.05; // 5% scale up
+  const flashColor = 0xffffff; // White flash
+  const flashDuration = 10; // Duration of the flash effect
+
   const { scene } = enemy;
   const originalScaleX = enemy.scaleX;
   const originalScaleY = enemy.scaleY;
 
-  const holdDuration = 10; // Duration to hold the white flash effect
-
   scene.tweens.add({
     targets: enemy,
-    scaleX: originalScaleX * 1.05, // 5% scale up
-    scaleY: originalScaleY * 1.05,
-    duration: 10,
+    scaleX: originalScaleX * scaleUpFactor,
+    scaleY: originalScaleY * scaleUpFactor,
+    duration: flashDuration,
     hold: holdDuration,
     yoyo: true,
     ease: "Power2",
     onStart: () => {
-      enemy.setTintFill(0xffffff); // White flash
+      enemy.setTintFill(flashColor);
     },
     onYoyo: () => {
       enemy.clearTint(); // Remove tint on return
@@ -37,10 +40,21 @@ export const enemyDeadEffect = (
   onStart: () => void,
   onComplete: () => void
 ) => {
-  const { scene, x, y } = enemy;
-  const shakeIntensity = 3;
+  const shakeIntensity = 3; // Intensity of the shake effect
+  const shakeDuration = 50; // Duration of the shake effect
 
-  if (onStart) onStart();
+  const colorDuration = 400; // Duration of the color effect
+
+  // particle effect parameters, boss has more intense effects
+  const particleLifespan =
+    type === "boss" ? { min: 1000, max: 2000 } : { min: 100, max: 500 };
+  const particleScale = { start: enemy.scale, end: 0 };
+  const particleQuantity = type === "boss" ? 60 : 40;
+  const particleExplode = type === "boss" ? 60 : 30;
+
+  onStart?.();
+
+  const { scene, x, y } = enemy;
 
   // Remove enemy collision event if exists
   if (enemy.body && enemy.body.onCollide) {
@@ -48,24 +62,25 @@ export const enemyDeadEffect = (
     enemy.body.enable = false;
   }
 
+  // shake effect
   scene.tweens.add({
     targets: enemy,
     x: x + shakeIntensity,
     y: y + shakeIntensity,
-    duration: 50,
+    duration: shakeDuration,
     yoyo: true,
     repeat: 3,
     ease: "Power2.easeInOut",
   });
 
-  // tween color and set enemy overlay color to black
+  // color Effect
   const color = { r: 255, g: 255, b: 255 };
   scene.tweens.add({
     targets: color,
     r: 0,
     g: 0,
     b: 0,
-    duration: 400,
+    duration: colorDuration,
     ease: "Power2.easeIn",
     onUpdate: () => {
       const tint = Phaser.Display.Color.GetColor(
@@ -77,30 +92,26 @@ export const enemyDeadEffect = (
     },
     onComplete: () => {
       enemy.setTint(0x000000);
-      if (onComplete) onComplete();
+      onComplete?.();
     },
   });
 
-  const lifespan =
-    type === "boss" ? { min: 1000, max: 2000 } : { min: 100, max: 500 };
-  const scale = { start: enemy.scale, end: 0 };
-  const quantity = type === "boss" ? 60 : 40;
-  const explode = type === "boss" ? 60 : 30;
-
+  // particle effect
   const fireEmitter = scene.add.particles(enemy.x, enemy.y, graphicsName, {
-    scale,
-    quantity,
-    lifespan,
+    scale: particleScale,
+    quantity: particleQuantity,
+    lifespan: particleLifespan,
     blendMode: "ADD",
     speed: { min: 180, max: 350 },
     angle: { min: 0, max: 360 },
     tint: [0xff0000, 0xffa500, 0xffff00],
   });
 
-  fireEmitter.explode(explode);
+  fireEmitter.explode(particleExplode);
 };
 
-export const enemyBeenAttackEffect = (enemy: Sprite) => {
+// get this code from appier team.
+export const enemyBeenAttackedEffect = (enemy: Sprite) => {
   const { scene } = enemy;
 
   // createShatteredEffect

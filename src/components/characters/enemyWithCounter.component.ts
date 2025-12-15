@@ -1,4 +1,3 @@
-import { getDepthByOptions } from "@/managers/layout/depth.manager";
 import { Container, Graphics, Sprite } from "../../configs/constants/constants";
 import { GAME_MECHANIC_CONSTANTS } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { Easing } from "../../configs/constants/layout.constants";
@@ -12,10 +11,10 @@ import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplaySizeByWidthPercentage } from "../../utils/layout.utils";
 import {
-  enemyBeenAttackEffect,
+  enemyBeenAttackedEffect,
   enemyDeadEffect,
   hitEnemyEffect,
-} from "./enemy.config";
+} from "./enemy.misc";
 
 export default class EnemyWithCounterComponent extends Container {
   private isDestroyed = false;
@@ -80,8 +79,8 @@ export default class EnemyWithCounterComponent extends Container {
     this.setHealthBar();
   }
 
-  setDepths(depth: number): void {
-    if (this.enemy) this.enemy.setDepth(depth);
+  public setDepths(depth: number): void {
+    this.enemy?.setDepth(depth);
     this.healthBarBorder.setDepth(depth);
     this.healthBar.setDepth(depth);
     this.healthBarFill.setDepth(depth);
@@ -355,7 +354,7 @@ export default class EnemyWithCounterComponent extends Container {
     this.blood -= currentDamage;
 
     hitEnemyEffect(this.enemy);
-    enemyBeenAttackEffect(this.enemy);
+    enemyBeenAttackedEffect(this.enemy);
 
     if (this.blood <= 0) {
       this.scene.sound.add("audio-enemy-dead").play({ volume: 0.2 });
