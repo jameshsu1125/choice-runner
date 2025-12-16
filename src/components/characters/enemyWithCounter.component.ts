@@ -21,6 +21,9 @@ export default class EnemyWithCounterComponent extends Container {
   private defaultScale = 1;
 
   public enemy: Sprite | null = null;
+  public hitArea: Sprite[] = [];
+  public hitAreaState = { debug: true, count: 4, radius: 0.5, size: 10 };
+
   public enemyName = "";
   public maxBlood: number = 100;
   public blood: number = 100;
@@ -81,6 +84,7 @@ export default class EnemyWithCounterComponent extends Container {
 
   public setDepths(depth: number): void {
     this.enemy?.setDepth(depth);
+    this.hitArea.forEach((hitArea) => hitArea.setDepth(999999));
     this.healthBarBorder.setDepth(depth);
     this.healthBar.setDepth(depth);
     this.healthBarFill.setDepth(depth);
@@ -154,7 +158,21 @@ export default class EnemyWithCounterComponent extends Container {
       });
       this.enemy.play("run", true);
     }
-    // For single sprite, no animation needed
+
+    this.hitArea = [...new Array(this.hitAreaState.count).keys()].map(() =>
+      this.scene.physics.add.staticSprite(
+        this.enemy!.x,
+        this.enemy!.y,
+        "invisible-hitArea"
+      )
+    );
+
+    this.hitArea.forEach((hitArea) => {
+      hitArea.setName(this.enemyName);
+      hitArea.setDisplaySize(this.hitAreaState.size, this.hitAreaState.size);
+      hitArea.setOrigin(0.5, 0.5);
+      hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
+    });
   }
 
   private addCollision() {
@@ -214,6 +232,30 @@ export default class EnemyWithCounterComponent extends Container {
           undefined,
           this.scene
         );
+
+        this.hitArea.forEach((hitArea) => {
+          if (!player.hitArea) return;
+          this.scene.physics.add.collider(
+            hitArea,
+            player.hitArea,
+            () => {
+              if (this.isDestroyed) return;
+              this.decreasePlayerBlood(player.hitArea!, enemy);
+            },
+            undefined,
+            this.scene
+          );
+          this.scene.physics.add.overlap(
+            hitArea,
+            player.hitArea,
+            () => {
+              if (this.isDestroyed) return;
+              this.decreasePlayerBlood(player.hitArea!, enemy);
+            },
+            undefined,
+            this.scene
+          );
+        });
       });
     }
   }
@@ -311,6 +353,19 @@ export default class EnemyWithCounterComponent extends Container {
 
   public setPxy(x: number, y: number) {
     this.enemy?.setPosition(x, y);
+    this.hitArea.forEach((hitArea, index) => {
+      const minSize = Math.min(
+        this.enemy!.displayWidth,
+        this.enemy!.displayHeight
+      );
+      const radius = minSize * this.hitAreaState.radius;
+      const angle =
+        -Math.PI / 2 + (index / this.hitAreaState.count) * Math.PI * 2;
+      const offsetX = x + radius * Math.cos(angle);
+      const offsetY = y + radius * Math.sin(angle);
+      hitArea.setPosition(offsetX, offsetY);
+    });
+
     this.enemy?.refreshBody();
     this.setHealthBar();
   }
@@ -336,6 +391,7 @@ export default class EnemyWithCounterComponent extends Container {
 
   public setVisibility(value: boolean) {
     this.enemy?.setVisible(value);
+    this.hitArea.forEach((hitArea) => hitArea.setVisible(value));
     this.healthBarBorder.setVisible(value);
     this.healthBarFill.setVisible(value);
   }
@@ -371,6 +427,8 @@ export default class EnemyWithCounterComponent extends Container {
   public destroy(): void {
     if (this.isDestroyed) return;
     this.isDestroyed = true;
+
+    this.hitArea.forEach((hitArea) => hitArea.destroy(true));
 
     if (this.enemy) {
       enemyDeadEffect(
