@@ -26,8 +26,8 @@ export const landingPreset = {
 };
 
 export const firepowerPreset = {
-  perspective: 80, // perspective effect
-  offsetY: -40, // Y-axis offset
+  perspective: 30, // perspective effect
+  offsetY: -100, // Y-axis offset
   speed: 3200, // bullet speed
   reload: 500, // bullet interval ms
   ratio: {

@@ -118,9 +118,7 @@ export class FirepowerComponent extends Container {
         const velocityX =
           ((player.player.x - this.scene.scale.width / 2) *
             firePerspective *
-            -1 *
-            perspective *
-            (700 / player.player.y)) /
+            -1) /
           safeDelta;
 
         const currentVelocity = random.enable
@@ -145,7 +143,7 @@ export class FirepowerComponent extends Container {
           Phaser.Math.DegToRad(
             (player.player.x - this.scene.scale.width / 2) *
               firePerspective *
-              -0.005 *
+              -0.006 *
               perspective
           )
         );
