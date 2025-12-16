@@ -71,8 +71,6 @@ export default class PlayerWidthCounterComponent extends Container {
   private createHitArea(): void {
     if (!this.player) return;
     const { x, y, displayWidth } = this.player;
-    const hitAreaDepth =
-      this.currentDepth! + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max;
 
     this.hitArea = this.scene.physics.add.sprite(
       x,
