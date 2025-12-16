@@ -1,6 +1,8 @@
-import { TQuadrant } from "../configs/constants/constants";
+import { gateState } from "../configs/presets/gate.preset";
+import { supplementState } from "../configs/presets/supplement.preset";
 
-export const randomRange = (
+export const randomEnemyRange = (
+  type: "before" | "after",
   min: number,
   max: number,
   count: number
@@ -10,20 +12,25 @@ export const randomRange = (
   const randomStep = Math.floor(Math.random() * count) + 1;
   const result: number[] = [];
 
+  const gateSDeploy =
+    type === "before" ? gateState.deploy.before : gateState.deploy.after;
+
+  const supplementDeploy =
+    type === "before"
+      ? supplementState.deploy.before
+      : supplementState.deploy.after;
+
   [...new Array(count).keys()].forEach((i) => {
-    result.push(min + step * ((randomStep + i) % count));
+    const toleranceRange = 500;
+    let time = min + step * ((randomStep + i) % count);
+
+    [...gateSDeploy, ...supplementDeploy].forEach((timePoint) => {
+      if (Math.abs(Math.abs(timePoint) - Math.abs(time)) < toleranceRange) {
+        time = timePoint + toleranceRange * 2 + Math.random() * toleranceRange;
+      }
+    });
+
+    result.push(time);
   });
-
   return result.sort((a, b) => b - a);
-};
-
-export const randomQuadrant = (count: number = 2) => {
-  const quadrants: TQuadrant[] = [];
-  while (quadrants.length < count) {
-    const quadrant = Math.floor(-1 + Math.random() * 3) as TQuadrant;
-    if (!quadrants.includes(quadrant)) {
-      quadrants.push(quadrant);
-    }
-  }
-  return quadrants;
 };

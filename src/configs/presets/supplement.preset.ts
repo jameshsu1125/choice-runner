@@ -1,8 +1,8 @@
-import { randomQuadrant } from "../../utils/misc.utils";
+import { randomQuadrant } from "../../utils/quadrant.utils";
 import { TQuadrant } from "../constants/constants";
 
 // config need to split before and after game start for stage deploy.
-const supplementState = {
+export const supplementState = {
   count: {
     before: { min: 1, max: 4 }, // practice time should be easier
     after: { min: 5, max: 15 },

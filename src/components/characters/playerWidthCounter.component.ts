@@ -81,7 +81,7 @@ export default class PlayerWidthCounterComponent extends Container {
     );
     this.hitArea.setDisplaySize(
       displayWidth * this.hitAreaState.offset.width,
-      displayWidth * this.hitAreaState.offset.width
+      (displayWidth * this.hitAreaState.offset.width) / 2
     );
     this.hitArea.setOrigin(0.5, 0);
     this.hitArea.setDepth(hitAreaDepth);

@@ -64,9 +64,9 @@ export default class SceneLayoutManager {
     this.layoutContainers.background = this.createBackground();
     this.layoutContainers.logo = this.createLogo();
     this.layoutContainers.player = this.createPlayer();
+    this.layoutContainers.enemy = this.createEnemy();
     this.layoutContainers.gate = this.createGate();
     this.layoutContainers.supplement = this.createSupplement();
-    this.layoutContainers.enemy = this.createEnemy();
     this.layoutContainers.firepower = this.createFirepower();
     this.layoutContainers.finishLine = this.createFinishLine();
     if (GAME_MECHANIC_CONSTANTS.showCtaButton) {
