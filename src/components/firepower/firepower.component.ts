@@ -159,7 +159,9 @@ export class FirepowerComponent extends Container {
           this.addCollision(firepower);
         this.firepowerContainer.push(firepower);
 
-        this.scene.sound.add("audio-fire").play({ volume: 0.1 });
+        this.scene.sound
+          .add("audio-fire")
+          .play({ volume: 0.1, delay: Math.random() });
       });
     });
   }

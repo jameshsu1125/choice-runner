@@ -17,20 +17,18 @@ export const gateAfterConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
 }[] = gateState.deploy.after
-  .map((time, index) => {
+  .map((time) => {
     const quadrant = randomQuadrant();
     return [...new Array(2).keys()].map((i) => ({
       time: time + i,
       data: {
         type: "gate" as const,
         quadrant: quadrant[i] || (0 as TQuadrant),
-        count:
-          Math.floor(
-            gateState.count.after.min +
-              Math.random() *
-                (gateState.count.after.max - gateState.count.after.min)
-          ) *
-          (index + 1),
+        count: Math.floor(
+          gateState.count.after.min +
+            Math.random() *
+              (gateState.count.after.max - gateState.count.after.min)
+        ),
       },
     }));
   })
