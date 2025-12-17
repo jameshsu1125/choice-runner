@@ -14,7 +14,6 @@ import { playerFormation } from "../../configs/presets/player.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
-import { getDepthByOptions } from "@/managers/layout/depth.manager";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
@@ -31,7 +30,10 @@ export default class PlayerWidthCounterComponent extends Container {
 
   // hit area only cover player upper body. make enemy easier to hit player
   public hitArea?: Sprite;
-  private hitAreaState = { debug: true, offset: { y: 0.6, width: 0.5 } };
+  private hitAreaState = {
+    debug: true,
+    offset: { y: 0.6, width: 0.5, height: 0.8 },
+  };
 
   // Cached geometry/state to avoid per-frame redraws
   private barInitialized = false;
@@ -44,8 +46,6 @@ export default class PlayerWidthCounterComponent extends Container {
   private removePlayerByName: (name: string) => void;
   private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private currentDepth: number | null = null;
-
-  private updateIndex: number = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -76,7 +76,7 @@ export default class PlayerWidthCounterComponent extends Container {
 
   private createHitArea(): void {
     if (!this.player) return;
-    const { x, y, displayWidth } = this.player;
+    const { x, y, displayWidth, displayHeight } = this.player;
 
     this.hitArea = this.scene.physics.add.sprite(
       x,
@@ -85,11 +85,11 @@ export default class PlayerWidthCounterComponent extends Container {
     );
     this.hitArea.setDisplaySize(
       displayWidth * this.hitAreaState.offset.width,
-      (displayWidth * this.hitAreaState.offset.width) / 2
+      displayHeight * this.hitAreaState.offset.height
     );
     this.hitArea.setOrigin(0.5, 0);
     this.hitArea.setDepth(999999);
-    this.hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
+    this.hitArea.setVisible(this.hitAreaState.debug ? true : false);
     this.hitArea.setName(this.playerName);
   }
 
@@ -289,26 +289,21 @@ export default class PlayerWidthCounterComponent extends Container {
   public setPositionByIndex(index: number, offset: number) {
     if (this.player === null || this.isDestroyed) return;
     const { gap, offsetY } = playerPreset;
-
     const position = playerFormation[index] || { x: 0, y: 0, depth: 0 };
-    const { left, top } = getAlign(this.player!, "CENTER_BOTTOM");
 
-    const currentX = left + position.x * gap;
-    const currentY = top + position.y * gap + this.tweenProperty.y;
+    if (this.player) {
+      const { left, top } = getAlign(this.player, "CENTER_BOTTOM");
 
-    this.player?.setPosition(currentX + offset, currentY + offsetY);
+      const currentX = left + position.x * gap;
+      const currentY = top + position.y * gap + this.tweenProperty.y;
 
-    const hitAreaPositionX = currentX + offset;
-    const hitAreaPositionY =
-      currentY +
-      offsetY -
-      this.hitAreaState.offset.y * this.player!.displayWidth;
+      const { displayWidth } = this.player;
+      const x = currentX + offset;
+      const y = currentY + offsetY - this.hitAreaState.offset.y * displayWidth;
 
-    this.updateIndex += 1;
-    this.hitArea?.setPosition(
-      this.updateIndex % 3 === 0 ? this.scene.scale.width : hitAreaPositionX,
-      this.updateIndex % 3 === 0 ? this.scene.scale.height : hitAreaPositionY
-    );
-    this.createHealthBar(currentX + offset, currentY + offsetY);
+      this.player.setPosition(currentX + offset, currentY + offsetY);
+      this.hitArea?.setPosition(x, y);
+      this.createHealthBar(currentX + offset, currentY + offsetY);
+    }
   }
 }
