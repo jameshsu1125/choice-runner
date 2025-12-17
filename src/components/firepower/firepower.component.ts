@@ -167,6 +167,7 @@ export class FirepowerComponent extends Container {
   }
 
   private addCollision(firepower: Sprite) {
+    return;
     const { layoutContainers } =
       ServiceLocator.get<SceneLayoutManager>("gameAreaManager");
 

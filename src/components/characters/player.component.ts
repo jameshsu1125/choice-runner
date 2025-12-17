@@ -113,11 +113,9 @@ export class PlayerComponent extends Container {
   }
 
   public decreaseBlood(playerHitArea: Sprite): void {
-    const [playerComponent] = this.players.filter((p) => {
-      console.log(playerHitArea.name, p.player?.name);
-
-      return p.player?.name === playerHitArea.name;
-    });
+    const [playerComponent] = this.players.filter(
+      (p) => p.player?.name === playerHitArea.name
+    );
 
     if (playerComponent) {
       playerComponent.decreaseBlood();
