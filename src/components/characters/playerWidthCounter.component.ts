@@ -31,7 +31,7 @@ export default class PlayerWidthCounterComponent extends Container {
 
   // hit area only cover player upper body. make enemy easier to hit player
   public hitArea?: Sprite;
-  private hitAreaState = { debug: false, offset: { y: 0.6, width: 0.5 } };
+  private hitAreaState = { debug: true, offset: { y: 0.6, width: 0.5 } };
 
   // Cached geometry/state to avoid per-frame redraws
   private barInitialized = false;
@@ -44,6 +44,8 @@ export default class PlayerWidthCounterComponent extends Container {
   private removePlayerByName: (name: string) => void;
   private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private currentDepth: number | null = null;
+
+  private updateIndex: number = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -88,7 +90,6 @@ export default class PlayerWidthCounterComponent extends Container {
     this.hitArea.setOrigin(0.5, 0);
     this.hitArea.setDepth(999999);
     this.hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
-    this.hitArea.setVisible(false);
     this.hitArea.setName(this.playerName);
   }
 
@@ -239,26 +240,6 @@ export default class PlayerWidthCounterComponent extends Container {
     const { layoutContainers } =
       ServiceLocator.get<SceneLayoutManager>("gameAreaManager");
 
-    layoutContainers.enemy.enemyState.forEach((enemyState) => {
-      const { target } = enemyState;
-      if (!target.enemy) {
-        this.scene.physics.add.collider(
-          hitArea!,
-          target,
-          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
-          () => {},
-          this.scene
-        );
-        this.scene.physics.add.overlap(
-          hitArea!,
-          target,
-          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
-          () => {},
-          this.scene
-        );
-      }
-    });
-
     layoutContainers.gate.gateState.forEach((gateState) => {
       const { target } = gateState;
       this.scene.physics.add.collider(
@@ -316,11 +297,17 @@ export default class PlayerWidthCounterComponent extends Container {
     const currentY = top + position.y * gap + this.tweenProperty.y;
 
     this.player?.setPosition(currentX + offset, currentY + offsetY);
-    this.hitArea?.setPosition(
-      currentX + offset,
+
+    const hitAreaPositionX = currentX + offset;
+    const hitAreaPositionY =
       currentY +
-        offsetY -
-        this.hitAreaState.offset.y * this.player!.displayWidth
+      offsetY -
+      this.hitAreaState.offset.y * this.player!.displayWidth;
+
+    this.updateIndex += 1;
+    this.hitArea?.setPosition(
+      this.updateIndex % 3 === 0 ? this.scene.scale.width : hitAreaPositionX,
+      this.updateIndex % 3 === 0 ? this.scene.scale.height : hitAreaPositionY
     );
     this.createHealthBar(currentX + offset, currentY + offsetY);
   }
