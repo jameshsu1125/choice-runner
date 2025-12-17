@@ -38,7 +38,7 @@ export const hitGateEffect = (object: Sprite, invalid: boolean) => {
 // get this code from appier team.
 export const getGateReward = (object: Sprite, graphicsName: string) => {
   const currentY = object.y + object.displayHeight * 0.5;
-  const particles = object.scene.add.particles(
+  const particles = object?.scene?.add.particles(
     object.x,
     currentY,
     graphicsName,

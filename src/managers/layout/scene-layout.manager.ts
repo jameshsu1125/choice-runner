@@ -48,6 +48,7 @@ export default class SceneLayoutManager {
   public layoutContainers!: LayoutContainers;
   public isGameOver = false;
   private gameOverCallback: () => void = () => {};
+  private isStarted = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -103,6 +104,20 @@ export default class SceneLayoutManager {
       this.layoutContainers.enemy.update(delta);
       this.layoutContainers.supplement.update(delta);
       this.layoutContainers.finishLine.update(delta);
+    });
+
+    this.scene.game.events.on("blur", () => {
+      if (this.isGameOver || !this.isStarted) return;
+      this.scene.sound.pauseAll();
+      this.scene.scene.pause();
+      EnterFrame.stop();
+    });
+
+    this.scene.game.events.on("focus", () => {
+      if (this.isGameOver || !this.isStarted) return;
+      this.scene.sound.resumeAll();
+      this.scene.scene.resume();
+      EnterFrame.play();
     });
 
     return this.layoutContainers;
@@ -312,6 +327,7 @@ export default class SceneLayoutManager {
   }
 
   public onStart(gameOver: () => void): void {
+    this.isStarted = true;
     this.gameOverCallback = gameOver;
     this.layoutContainers.player.onStart();
     this.layoutContainers.firepower.onStart();
