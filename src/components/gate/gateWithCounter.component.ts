@@ -133,30 +133,6 @@ export default class GateWithCounterComponent extends Container {
         this.scene
       );
     });
-
-    layoutContainers.player.players.forEach((player) => {
-      if (!player.player) return;
-      this.scene.physics.add.collider(
-        gate,
-        player.player,
-        () => {
-          if (this.isDestroyed) return;
-          this.increasePlayerCount(this.num, gate.name);
-        },
-        undefined,
-        this.scene
-      );
-      this.scene.physics.add.overlap(
-        gate,
-        player.player,
-        () => {
-          if (this.isDestroyed) return;
-          this.increasePlayerCount(this.num, gate.name);
-        },
-        undefined,
-        this.scene
-      );
-    });
   }
 
   private updateText(): void {

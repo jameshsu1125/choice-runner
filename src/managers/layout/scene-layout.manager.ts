@@ -308,6 +308,7 @@ export default class SceneLayoutManager {
     this.layoutContainers.player.update();
     this.layoutContainers.firepower.update();
     this.checkEnemyPlayerCollision();
+    this.checkGatePlayerCollision();
   }
 
   public onStart(gameOver: () => void): void {
@@ -338,6 +339,29 @@ export default class SceneLayoutManager {
         ) {
           if (!state.target.enemy) return;
           this.decreasePlayerBlood(playerSprite.hitArea, state.target.enemy);
+        }
+      });
+    });
+  }
+
+  private checkGatePlayerCollision(): void {
+    const { gate, player } = this.layoutContainers;
+
+    const { gateState } = gate;
+    const { players } = player;
+
+    gateState.forEach((state) => {
+      if (!state.target.gate) return;
+      const gateBounds = state.target.gate.getBounds();
+
+      players.forEach((playerSprite) => {
+        if (!playerSprite.hitArea) return;
+        const playerBounds = playerSprite.hitArea?.getBounds();
+        if (
+          Phaser.Geom.Intersects.RectangleToRectangle(gateBounds, playerBounds)
+        ) {
+          if (!state.target.gate) return;
+          this.increasePlayerCount(state.target.num, state.target.gate.name);
         }
       });
     });

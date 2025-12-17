@@ -70,7 +70,6 @@ export default class PlayerWidthCounterComponent extends Container {
   private build(): void {
     this.initHealthBar();
     this.createPlayer();
-    this.createCollider();
     this.createHitArea();
   }
 
@@ -231,38 +230,6 @@ export default class PlayerWidthCounterComponent extends Container {
         this.tweenProperty = property;
       },
     }).play();
-  }
-
-  private createCollider(): void {
-    if (!this.player || !this.hitArea) return;
-    const { hitArea } = this;
-
-    const { layoutContainers } =
-      ServiceLocator.get<SceneLayoutManager>("gameAreaManager");
-
-    layoutContainers.gate.gateState.forEach((gateState) => {
-      const { target } = gateState;
-      this.scene.physics.add.collider(
-        hitArea!,
-        target,
-        () => {
-          this.increasePlayerCount(target.num, target.name);
-          target.destroy();
-        },
-        () => {},
-        this.scene
-      );
-      this.scene.physics.add.overlap(
-        hitArea!,
-        target,
-        () => {
-          this.increasePlayerCount(target.num, target.name);
-          target.destroy();
-        },
-        () => {},
-        this.scene
-      );
-    });
   }
 
   public destroy(): void {
