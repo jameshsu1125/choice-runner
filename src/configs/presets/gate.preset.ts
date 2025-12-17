@@ -17,7 +17,7 @@ export const gateAfterConfig: {
   time: number;
   data: { quadrant: TQuadrant; count: number; type: "gate" };
 }[] = gateState.deploy.after
-  .map((time) => {
+  .map((time, index) => {
     const quadrant = randomQuadrant();
     return [...new Array(2).keys()].map((i) => ({
       time: time + i,
@@ -25,7 +25,7 @@ export const gateAfterConfig: {
         type: "gate" as const,
         quadrant: quadrant[i] || (0 as TQuadrant),
         count: Math.floor(
-          gateState.count.after.min +
+          gateState.count.after.min * (index + 1) +
             Math.random() *
               (gateState.count.after.max - gateState.count.after.min)
         ),

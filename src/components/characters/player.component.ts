@@ -60,7 +60,8 @@ export class PlayerComponent extends Container {
         this.decreasePlayerBlood,
         this.increasePlayerCount,
         this.removePlayerByName.bind(this),
-        this.currentDepth
+        this.currentDepth,
+        this.players.length
       );
       this.players.push(player);
       if (autoPlaySheet) {

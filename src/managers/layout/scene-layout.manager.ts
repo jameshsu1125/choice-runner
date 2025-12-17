@@ -10,12 +10,12 @@ import { GateComponent } from "../../components/gate/gate.component";
 import { LandingComponent } from "../../components/landing.component";
 import { LogoComponent } from "../../components/logo/logo.component";
 import { SupplementComponent } from "../../components/supplement/supplement.component";
+import { Sprite } from "../../configs/constants/constants";
 import { GAME_MECHANIC_CONSTANTS } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { gamePreset } from "../../configs/presets/layout.preset";
 import { ANCHORS } from "../../utils/anchors.constants";
 import { scaleImageToCover } from "../../utils/layout.utils";
 import BaseLayoutManager from "./base-layout.manager";
-import { Graphics, Sprite } from "../../configs/constants/constants";
 
 type Background = Phaser.GameObjects.Image;
 
@@ -48,6 +48,7 @@ export default class SceneLayoutManager {
   public layoutContainers!: LayoutContainers;
   public isGameOver = false;
   private gameOverCallback: () => void = () => {};
+  private isStarted = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -103,6 +104,20 @@ export default class SceneLayoutManager {
       this.layoutContainers.enemy.update(delta);
       this.layoutContainers.supplement.update(delta);
       this.layoutContainers.finishLine.update(delta);
+    });
+
+    this.scene.game.events.on("blur", () => {
+      if (this.isGameOver || !this.isStarted) return;
+      this.scene.sound.pauseAll();
+      this.scene.scene.pause();
+      EnterFrame.stop();
+    });
+
+    this.scene.game.events.on("focus", () => {
+      if (this.isGameOver || !this.isStarted) return;
+      this.scene.sound.resumeAll();
+      this.scene.scene.resume();
+      EnterFrame.play();
     });
 
     return this.layoutContainers;
@@ -303,13 +318,16 @@ export default class SceneLayoutManager {
     this.scene.sound.add("audio-victory").play({ volume: 0.5 });
   }
 
-  public update(time: number): void {
+  public update(): void {
     if (this.isGameOver) return;
     this.layoutContainers.player.update();
     this.layoutContainers.firepower.update();
+    this.checkEnemyPlayerCollision();
+    this.checkGatePlayerCollision();
   }
 
   public onStart(gameOver: () => void): void {
+    this.isStarted = true;
     this.gameOverCallback = gameOver;
     this.layoutContainers.player.onStart();
     this.layoutContainers.firepower.onStart();
@@ -317,5 +335,51 @@ export default class SceneLayoutManager {
 
     this.layoutContainers.landing.destroy();
     this.scene.sound.add("audio-bgm").play({ volume: 0.4, loop: true });
+  }
+
+  private checkEnemyPlayerCollision(): void {
+    const { enemy, player } = this.layoutContainers;
+
+    const { enemyState } = enemy;
+    const { players } = player;
+
+    enemyState.forEach((state) => {
+      if (!state.target.enemy) return;
+      const enemyBounds = state.target.enemy.getBounds();
+
+      players.forEach((playerSprite) => {
+        if (!playerSprite.hitArea) return;
+        const playerBounds = playerSprite.hitArea?.getBounds();
+        if (
+          Phaser.Geom.Intersects.RectangleToRectangle(enemyBounds, playerBounds)
+        ) {
+          if (!state.target.enemy) return;
+          this.decreasePlayerBlood(playerSprite.hitArea, state.target.enemy);
+        }
+      });
+    });
+  }
+
+  private checkGatePlayerCollision(): void {
+    const { gate, player } = this.layoutContainers;
+
+    const { gateState } = gate;
+    const { players } = player;
+
+    gateState.forEach((state) => {
+      if (!state.target.gate) return;
+      const gateBounds = state.target.gate.getBounds();
+
+      players.forEach((playerSprite) => {
+        if (!playerSprite.hitArea) return;
+        const playerBounds = playerSprite.hitArea?.getBounds();
+        if (
+          Phaser.Geom.Intersects.RectangleToRectangle(gateBounds, playerBounds)
+        ) {
+          if (!state.target.gate) return;
+          this.increasePlayerCount(state.target.num, state.target.gate.name);
+        }
+      });
+    });
   }
 }

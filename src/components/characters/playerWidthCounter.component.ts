@@ -26,10 +26,14 @@ export default class PlayerWidthCounterComponent extends Container {
   public healthBarBorder: Graphics = this.scene.add.graphics();
   public healthBar: Image = this.scene.add.image(0, 0, "health-bar");
   private healthBarFill: Graphics = this.scene.add.graphics();
+  private playerIndex: number = 0;
 
   // hit area only cover player upper body. make enemy easier to hit player
   public hitArea?: Sprite;
-  private hitAreaState = { debug: false, offset: { y: 0.6, width: 0.5 } };
+  private hitAreaState = {
+    debug: false,
+    offset: { y: 0.6, width: 0.5, height: 0.8 },
+  };
 
   // Cached geometry/state to avoid per-frame redraws
   private barInitialized = false;
@@ -49,7 +53,8 @@ export default class PlayerWidthCounterComponent extends Container {
     decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
-    depth: number
+    depth: number,
+    index: number
   ) {
     super(scene, 0, 0);
     this.playerName = playerName;
@@ -57,6 +62,7 @@ export default class PlayerWidthCounterComponent extends Container {
     this.increasePlayerCount = increasePlayerCount;
     this.removePlayerByName = removePlayerByName;
     this.currentDepth = depth;
+    this.playerIndex = index;
 
     this.build();
   }
@@ -64,13 +70,12 @@ export default class PlayerWidthCounterComponent extends Container {
   private build(): void {
     this.initHealthBar();
     this.createPlayer();
-    this.createCollider();
     this.createHitArea();
   }
 
   private createHitArea(): void {
     if (!this.player) return;
-    const { x, y, displayWidth } = this.player;
+    const { x, y, displayWidth, displayHeight } = this.player;
 
     this.hitArea = this.scene.physics.add.sprite(
       x,
@@ -79,11 +84,12 @@ export default class PlayerWidthCounterComponent extends Container {
     );
     this.hitArea.setDisplaySize(
       displayWidth * this.hitAreaState.offset.width,
-      (displayWidth * this.hitAreaState.offset.width) / 2
+      displayHeight * this.hitAreaState.offset.height
     );
     this.hitArea.setOrigin(0.5, 0);
     this.hitArea.setDepth(999999);
-    this.hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
+    this.hitArea.setVisible(this.hitAreaState.debug ? true : false);
+    this.hitArea.setName(this.playerName);
   }
 
   private initHealthBar(): void {
@@ -174,9 +180,6 @@ export default class PlayerWidthCounterComponent extends Container {
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       // Use atlas with animation
       player = this.scene.physics.add.sprite(0, 0, "playerSheet");
-      const targetHeight = (targetWidth / player.width) * player.height;
-      player.setDisplaySize(targetWidth, targetHeight);
-
       player.anims.create({
         key: "run",
         frames: this.scene.anims.generateFrameNames("playerSheet", {
@@ -191,13 +194,15 @@ export default class PlayerWidthCounterComponent extends Container {
     } else {
       // Use single sprite image
       player = this.scene.physics.add.sprite(0, 0, "playerSprite");
-      const targetHeight = (targetWidth / player.width) * player.height;
-      player.setName(this.playerName);
-      player.setDisplaySize(targetWidth, targetHeight);
     }
 
+    const targetHeight = (targetWidth / player.width) * player.height;
+    player.setDisplaySize(targetWidth, targetHeight);
+    player.setName(this.playerName);
+
     this.player = player;
-    this.player.setDepth(this.currentDepth! + this.depth);
+    const { depth = 0 } = playerFormation[this.playerIndex];
+    this.player.setDepth(this.currentDepth! + depth);
   }
 
   public stopAnimationSheet(): void {
@@ -227,58 +232,6 @@ export default class PlayerWidthCounterComponent extends Container {
     }).play();
   }
 
-  private createCollider(): void {
-    if (!this.player || !this.hitArea) return;
-    const { hitArea } = this;
-
-    const { layoutContainers } =
-      ServiceLocator.get<SceneLayoutManager>("gameAreaManager");
-
-    layoutContainers.enemy.enemyState.forEach((enemyState) => {
-      const { target } = enemyState;
-      if (!target.enemy) {
-        this.scene.physics.add.collider(
-          hitArea!,
-          target,
-          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
-          () => {},
-          this.scene
-        );
-        this.scene.physics.add.overlap(
-          hitArea!,
-          target,
-          () => this.decreasePlayerBlood(hitArea!, target.enemy!),
-          () => {},
-          this.scene
-        );
-      }
-    });
-
-    layoutContainers.gate.gateState.forEach((gateState) => {
-      const { target } = gateState;
-      this.scene.physics.add.collider(
-        hitArea!,
-        target,
-        () => {
-          this.increasePlayerCount(target.num, target.name);
-          target.destroy();
-        },
-        () => {},
-        this.scene
-      );
-      this.scene.physics.add.overlap(
-        hitArea!,
-        target,
-        () => {
-          this.increasePlayerCount(target.num, target.name);
-          target.destroy();
-        },
-        () => {},
-        this.scene
-      );
-    });
-  }
-
   public destroy(): void {
     this.isDestroyed = true;
     this.healthBarBorder.destroy();
@@ -303,20 +256,21 @@ export default class PlayerWidthCounterComponent extends Container {
   public setPositionByIndex(index: number, offset: number) {
     if (this.player === null || this.isDestroyed) return;
     const { gap, offsetY } = playerPreset;
-
     const position = playerFormation[index] || { x: 0, y: 0, depth: 0 };
-    const { left, top } = getAlign(this.player!, "CENTER_BOTTOM");
 
-    const currentX = left + position.x * gap;
-    const currentY = top + position.y * gap + this.tweenProperty.y;
+    if (this.player) {
+      const { left, top } = getAlign(this.player, "CENTER_BOTTOM");
 
-    this.player?.setPosition(currentX + offset, currentY + offsetY);
-    this.hitArea?.setPosition(
-      currentX + offset,
-      currentY +
-        offsetY -
-        this.hitAreaState.offset.y * this.player!.displayWidth
-    );
-    this.createHealthBar(currentX + offset, currentY + offsetY);
+      const currentX = left + position.x * gap;
+      const currentY = top + position.y * gap + this.tweenProperty.y;
+
+      const { displayWidth } = this.player;
+      const x = currentX + offset;
+      const y = currentY + offsetY - this.hitAreaState.offset.y * displayWidth;
+
+      this.player.setPosition(currentX + offset, currentY + offsetY);
+      this.hitArea?.setPosition(x, y);
+      this.createHealthBar(currentX + offset, currentY + offsetY);
+    }
   }
 }
