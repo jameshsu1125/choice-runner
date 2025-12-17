@@ -22,7 +22,7 @@ export default class EnemyWithCounterComponent extends Container {
 
   public enemy: Sprite | null = null;
   public hitArea: Sprite[] = [];
-  public hitAreaState = { debug: false, count: 10, radius: 0.5, size: 10 };
+  public hitAreaState = { debug: true, count: 4, radius: 0.5, size: 10 };
 
   public enemyName = "";
   public maxBlood: number = 100;

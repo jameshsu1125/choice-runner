@@ -44,7 +44,7 @@ const boss: TBlood = {
 
 // config need to split before and after game start for stage deploy.
 export const enemyAfterConfig: TEnemyConfig[] = [
-  ...randomEnemyRange("after", 0, 29999, 60).map(() => {
+  ...randomEnemyRange("after", 0, 29999, 500).map(() => {
     return {
       time: 0 + Math.floor(Math.random() * 29999),
       data: {

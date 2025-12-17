@@ -14,6 +14,7 @@ import { playerFormation } from "../../configs/presets/player.preset";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
+import { getDepthByOptions } from "@/managers/layout/depth.manager";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
@@ -26,6 +27,7 @@ export default class PlayerWidthCounterComponent extends Container {
   public healthBarBorder: Graphics = this.scene.add.graphics();
   public healthBar: Image = this.scene.add.image(0, 0, "health-bar");
   private healthBarFill: Graphics = this.scene.add.graphics();
+  private playerIndex: number = 0;
 
   // hit area only cover player upper body. make enemy easier to hit player
   public hitArea?: Sprite;
@@ -49,7 +51,8 @@ export default class PlayerWidthCounterComponent extends Container {
     decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
-    depth: number
+    depth: number,
+    index: number
   ) {
     super(scene, 0, 0);
     this.playerName = playerName;
@@ -57,6 +60,7 @@ export default class PlayerWidthCounterComponent extends Container {
     this.increasePlayerCount = increasePlayerCount;
     this.removePlayerByName = removePlayerByName;
     this.currentDepth = depth;
+    this.playerIndex = index;
 
     this.build();
   }
@@ -84,6 +88,8 @@ export default class PlayerWidthCounterComponent extends Container {
     this.hitArea.setOrigin(0.5, 0);
     this.hitArea.setDepth(999999);
     this.hitArea.setAlpha(this.hitAreaState.debug ? 1 : 0);
+    this.hitArea.setVisible(false);
+    this.hitArea.setName(this.playerName);
   }
 
   private initHealthBar(): void {
@@ -174,9 +180,6 @@ export default class PlayerWidthCounterComponent extends Container {
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       // Use atlas with animation
       player = this.scene.physics.add.sprite(0, 0, "playerSheet");
-      const targetHeight = (targetWidth / player.width) * player.height;
-      player.setDisplaySize(targetWidth, targetHeight);
-
       player.anims.create({
         key: "run",
         frames: this.scene.anims.generateFrameNames("playerSheet", {
@@ -191,13 +194,15 @@ export default class PlayerWidthCounterComponent extends Container {
     } else {
       // Use single sprite image
       player = this.scene.physics.add.sprite(0, 0, "playerSprite");
-      const targetHeight = (targetWidth / player.width) * player.height;
-      player.setName(this.playerName);
-      player.setDisplaySize(targetWidth, targetHeight);
     }
 
+    const targetHeight = (targetWidth / player.width) * player.height;
+    player.setDisplaySize(targetWidth, targetHeight);
+    player.setName(this.playerName);
+
     this.player = player;
-    this.player.setDepth(this.currentDepth! + this.depth);
+    const { depth = 0 } = playerFormation[this.playerIndex];
+    this.player.setDepth(this.currentDepth! + depth);
   }
 
   public stopAnimationSheet(): void {
