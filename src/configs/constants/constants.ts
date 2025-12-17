@@ -8,6 +8,7 @@ export type Text = Phaser.GameObjects.Text;
 export type Rectangle = Phaser.GameObjects.Rectangle;
 export type Polygon = Phaser.GameObjects.Polygon;
 export type Group = Phaser.GameObjects.Group;
+export type CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 
 export const Container = Phaser.GameObjects.Container;
 export const Scene = Phaser.Scene;
@@ -19,4 +20,3 @@ export const Polygon = Phaser.GameObjects.Polygon;
 export const Group = Phaser.GameObjects.Group;
 
 export type TQuadrant = -1 | 0 | 1;
-
