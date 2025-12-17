@@ -31,7 +31,7 @@ export default class PlayerWidthCounterComponent extends Container {
   // hit area only cover player upper body. make enemy easier to hit player
   public hitArea?: Sprite;
   private hitAreaState = {
-    debug: true,
+    debug: false,
     offset: { y: 0.6, width: 0.5, height: 0.8 },
   };
 
