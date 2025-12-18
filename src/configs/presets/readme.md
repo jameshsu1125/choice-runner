@@ -8,7 +8,7 @@ A simple function to record time for animation. Because the delta provided by Ph
 
 ## entity config
 
-`time` (required): The Entity will fire a new component when the accumulated enterframe delta time reaches this configured time value. If the value equals 0, the component fires when the game starts. If the value is less than 0, the component deploy before the game starts.
+**`time` (required): The Entity will fire a new component when the accumulated enterframe delta time reaches this configured time value. If the value equals 0, the component fires when the game starts. If the value is less than 0, the component deploy before the game starts.**
 
 1. [enemy](./enemy.preset.ts)
 
