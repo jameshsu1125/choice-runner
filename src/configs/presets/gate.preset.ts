@@ -54,3 +54,10 @@ export const gateBeforeConfig: {
     }));
   })
   .flat();
+
+// deploy custom gate config like this
+// export const gate{After|Before}Config = [
+//   { time: 5000, data: { quadrant: 0, count: 3, type: "gate" } },
+//   { time: 15000, data: { quadrant: 1, count: 5, type: "gate" } },
+//   { time: 25000, data: { quadrant: 2, count: 7, type: "gate" } },
+// ];

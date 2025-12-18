@@ -2,10 +2,10 @@ import { gateState } from "../configs/presets/gate.preset";
 import { supplementState } from "../configs/presets/supplement.preset";
 
 export const randomEnemyRange = (
-  type: "before" | "after",
-  min: number,
-  max: number,
-  count: number
+  type: "before" | "after", // deploy when game before or after start
+  min: number, // minimum time
+  max: number, // maximum time
+  count: number // number of enemies to deploy
 ): number[] => {
   const range = max - min;
   const step = range / (count + 1);

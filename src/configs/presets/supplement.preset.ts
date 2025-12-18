@@ -58,3 +58,10 @@ export const supplementBeforeConfig: {
     }));
   })
   .flat();
+
+// deploy custom supplement config like this
+// export const supplement{After|Before}Config = [
+//   { time: 8000, data: { quadrant: 0, count: 5, type: "ARMY" } },
+//   { time: 12000, data: { quadrant: 1, count: 3, type: "GUN" } },
+//   { time: 18000, data: { quadrant: 2, count: 7, type: "ARMY" } },
+// ];

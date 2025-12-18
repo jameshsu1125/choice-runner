@@ -8,15 +8,15 @@ type TBlood = {
 };
 
 type TEnemyConfig = {
-  time: number;
+  time: number; // deploy time by enterFrame time reached
   data: {
-    x: number;
-    type: "follow" | "straight";
+    x: number; // initial x position
+    type: "follow" | "straight"; // movement type
     blood: {
-      type: "ghost" | "boss";
-      max: number;
-      value: number;
-      color: number;
+      type: "ghost" | "boss"; // blood type
+      max: number; // max blood value
+      value: number; // initial blood value
+      color: number; // color representation
     };
   };
 };
@@ -75,3 +75,13 @@ export const enemyBeforeConfig: TEnemyConfig[] = randomEnemyRange(
     },
   };
 });
+
+// deploy custom enemy config like this
+// export const enemy{After|Before}Config: TEnemyConfig[] = [
+//   { time: 10000, data: { x: 200, type: "straight", blood: practiceEnemy } },
+//   { time: 13000, data: { x: 300, type: "straight", blood: practiceEnemy } },
+//   { time: 15000, data: { x: 400, type: "follow", blood: practiceEnemy } },
+//   { time: 16000, data: { x: 500, type: "straight", blood: smallEnemy } },
+//   { time: 17000, data: { x: 200, type: "straight", blood: practiceEnemy } },
+//   { time: 18000, data: { x: 300, type: "straight", blood: practiceEnemy } },
+// ];
