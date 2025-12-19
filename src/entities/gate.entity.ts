@@ -1,5 +1,4 @@
 import { gateAfterConfig } from "../configs/presets/gate.preset";
-import { gamePreset } from "../configs/presets/layout.preset";
 import SceneLayoutManager from "../managers/layout/scene-layout.manager";
 import ServiceLocator from "../services/service-locator/service-locator.service";
 
