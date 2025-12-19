@@ -76,6 +76,7 @@ export class SupplementComponent extends Container {
     });
     const depth = getDepthByOptions("supplement", time);
     supplement.setDepths(depth);
+    if (time >= 0) supplement.doRollingAnimation();
   }
 
   public removeStateByName(name: string): void {
