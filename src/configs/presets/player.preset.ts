@@ -18,5 +18,15 @@ export const playerFormation = [
   { x: 1, y: -1, depth: 1 },
   { x: 2, y: 0, depth: 3 },
   { x: -2, y: 0, depth: 3 },
-  { x: 2, y: 1, depth: 5 },
+  // circle formation for more than 18 players
+  ...[...new Array(18).keys()].map((angle) => {
+    const rad = 0 - (angle / 18) * Math.PI * 2;
+    const radius = 3;
+    const y = Math.sin(rad) * radius;
+    return {
+      x: Math.cos(rad) * radius,
+      y,
+      depth: 3 + Math.round(y / 0.5),
+    };
+  }),
 ];

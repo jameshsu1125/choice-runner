@@ -14,6 +14,7 @@ export const logoPreset = {
 export const landingPreset = {
   finger: {
     ratio: 61 / 320, // size ratio
+    offsetY: -80, // Y-axis offset
   },
   leftArrow: {
     ratio: 114 / 320, // size ratio

@@ -1,10 +1,8 @@
+import { getDepthByOptions } from "../managers/layout/depth.manager";
 import { Container, Scene } from "../configs/constants/constants";
 import { landingPreset } from "../configs/presets/layout.preset";
 import MainScene from "../scenes/main.scene";
-import {
-  getDisplayPositionByBorderAlign as getAlign,
-  getDisplaySizeByWidthPercentage as setSize,
-} from "../utils/layout.utils";
+import { getDisplaySizeByWidthPercentage as setSize } from "../utils/layout.utils";
 
 export class LandingComponent extends Container {
   private fingerWidth: number = 0;
@@ -21,13 +19,16 @@ export class LandingComponent extends Container {
 
   private createLeftArrow() {
     const { ratio, offsetY } = landingPreset.leftArrow;
+    const { width, height } = this.scene.scale;
+
     const arrow = this.scene.add.image(0, 0, "arrow-left");
+    arrow.setDepth(getDepthByOptions("end"));
 
-    const { width, height } = setSize(arrow, ratio);
-    arrow.setDisplaySize(width, height);
+    const { width: arrowWidth, height: arrowHeight } = setSize(arrow, ratio);
+    arrow.setDisplaySize(arrowWidth, arrowHeight);
 
-    const x = -this.fingerWidth / 2 - width / 2;
-    const y = getAlign(arrow, this.scene, "BOTTOM") + offsetY + 100;
+    const x = width / 2 - this.fingerWidth / 2 - arrowWidth / 2;
+    const y = height - arrowHeight / 2 + offsetY + 100;
     arrow.setPosition(x, y);
 
     this.scene.tweens.add({
@@ -36,20 +37,20 @@ export class LandingComponent extends Container {
       duration: 800,
       ease: "Quart.easeOut",
     });
-
-    this.add(arrow);
   }
 
   private createRightArrow(): void {
     const { ratio, offsetY } = landingPreset.rightArrow;
+    const { width, height } = this.scene.scale;
 
     const arrow = this.scene.add.image(0, 0, "arrow-right");
+    arrow.setDepth(getDepthByOptions("end"));
 
-    const { width: rightWidth, height: rightHeight } = setSize(arrow, ratio);
-    arrow.setDisplaySize(rightWidth, rightHeight);
+    const { width: arrowWidth, height: arrowHeight } = setSize(arrow, ratio);
+    arrow.setDisplaySize(arrowWidth, arrowHeight);
 
-    const x = 0 + this.fingerWidth / 2 + rightWidth / 2;
-    const y = getAlign(arrow, this.scene, "BOTTOM") + offsetY + 100;
+    const x = width / 2 + this.fingerWidth / 2 + arrowWidth / 2;
+    const y = height - arrowHeight / 2 + offsetY + 100;
     arrow.setPosition(x, y);
 
     this.scene.tweens.add({
@@ -59,8 +60,6 @@ export class LandingComponent extends Container {
       delay: 200,
       ease: "Quart.easeOut",
     });
-
-    this.add(arrow);
   }
 
   private createArrows(): void {
@@ -69,14 +68,17 @@ export class LandingComponent extends Container {
   }
 
   private createFinger(): void {
-    const { ratio } = landingPreset.finger;
+    const { ratio, offsetY } = landingPreset.finger;
+    const { width, height } = this.scene.scale;
 
     const finger = this.scene.add.image(0, 0, "finger");
-    const { width, height } = setSize(finger, ratio);
-    const y = getAlign(finger, this.scene, "BOTTOM") + 200;
+    const { width: fingerWidth, height: fingerHeight } = setSize(finger, ratio);
+    const x = width / 2;
+    const y = height - fingerHeight / 2 + offsetY + 400;
 
-    finger.setDisplaySize(width, height);
-    finger.setPosition(0, y);
+    finger.setDisplaySize(fingerWidth, fingerHeight);
+    finger.setPosition(x, y);
+    finger.setDepth(getDepthByOptions("end"));
 
     this.scene.tweens.add({
       targets: finger,
@@ -106,8 +108,6 @@ export class LandingComponent extends Container {
       },
     });
 
-    this.fingerWidth = width;
-
-    this.add(finger);
+    this.fingerWidth = fingerWidth;
   }
 }
