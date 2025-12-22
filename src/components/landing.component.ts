@@ -1,11 +1,14 @@
 import { getDepthByOptions } from "../managers/layout/depth.manager";
-import { Container, Scene } from "../configs/constants/constants";
+import { Container, Image, Scene } from "../configs/constants/constants";
 import { landingPreset } from "../configs/presets/layout.preset";
 import MainScene from "../scenes/main.scene";
 import { getDisplaySizeByWidthPercentage as setSize } from "../utils/layout.utils";
 
 export class LandingComponent extends Container {
   private fingerWidth: number = 0;
+  private finger?: Image;
+  private leftArrow?: Image;
+  private rightArrow?: Image;
 
   constructor(scene: Scene) {
     super(scene);
@@ -37,6 +40,8 @@ export class LandingComponent extends Container {
       duration: 800,
       ease: "Quart.easeOut",
     });
+
+    this.leftArrow = arrow;
   }
 
   private createRightArrow(): void {
@@ -60,6 +65,8 @@ export class LandingComponent extends Container {
       delay: 200,
       ease: "Quart.easeOut",
     });
+
+    this.rightArrow = arrow;
   }
 
   private createArrows(): void {
@@ -109,5 +116,13 @@ export class LandingComponent extends Container {
     });
 
     this.fingerWidth = fingerWidth;
+    this.finger = finger;
+  }
+
+  public destroy(): void {
+    this.finger?.destroy();
+    this.leftArrow?.destroy();
+    this.rightArrow?.destroy();
+    super.destroy();
   }
 }

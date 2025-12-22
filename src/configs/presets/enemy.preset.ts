@@ -64,7 +64,7 @@ export const enemyBeforeConfig: TEnemyConfig[] = randomEnemyRange(
   "before",
   -7000,
   0,
-  5
+  10
 ).map((time) => {
   return {
     time,

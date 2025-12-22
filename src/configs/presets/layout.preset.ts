@@ -32,7 +32,7 @@ export const firepowerPreset = {
   speed: 3200, // bullet speed
   reload: 500, // bullet interval ms
   ratio: {
-    level1: 5 / 320, // size ratio
+    level1: 7 / 320, // size ratio
     level2: 10 / 320, // size ratio
   },
   damage: {
