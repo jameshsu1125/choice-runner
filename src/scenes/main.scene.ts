@@ -94,10 +94,6 @@ export default class MainScene extends Phaser.Scene {
 
       window.removeEventListener("pointerdown", onUserInput);
       window.removeEventListener("keydown", onUserInput);
-
-      // window.addEventListener("blur", () => {
-      //   if (!STOP_COLLISION) return location.reload();
-      // });
     };
     window.addEventListener("pointerdown", onUserInput);
     window.addEventListener("keydown", onUserInput);

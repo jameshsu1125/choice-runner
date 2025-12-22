@@ -21,7 +21,7 @@ export const GAME_MECHANIC_CONFIG_SCHEMA: GameMechanicConfigSchema = {
   playerReinforce: {
     min: NUMERIC_MIN_VALUE,
     max: 20,
-    default: 1,
+    default: 20,
   },
   enemySpeed: {
     min: 5000,

@@ -31,8 +31,8 @@ export const firepowerPreset = {
   speed: 3200, // bullet speed
   reload: 500, // bullet interval ms
   ratio: {
-    level1: 9 / 320, // size ratio
-    level2: 17 / 320, // size ratio
+    level1: 5 / 320, // size ratio
+    level2: 10 / 320, // size ratio
   },
   damage: {
     level1: 50, // damage value
@@ -46,9 +46,9 @@ export const firepowerPreset = {
 
 export const playerPreset = {
   speedByInput: 5, // player movement speed
-  ratio: (30 / 320) * 1.2, // size ratio
+  ratio: 30 / 320, // size ratio
   offsetY: -450, // Y-axis offset
-  gap: 120, //  player gap
+  gap: 100, //  player gap
   randomGap: 40, // random position gap
   healthBar: {
     offsetY: 40, // Y-axis offset
