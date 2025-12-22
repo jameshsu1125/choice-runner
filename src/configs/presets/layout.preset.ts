@@ -47,9 +47,9 @@ export const firepowerPreset = {
 
 export const playerPreset = {
   speedByInput: 5, // player movement speed
-  ratio: 30 / 320, // size ratio
+  ratio: (30 / 320) * 1.2, // size ratio
   offsetY: -450, // Y-axis offset
-  gap: 100, //  player gap
+  gap: 120, //  player gap
   randomGap: 40, // random position gap
   healthBar: {
     offsetY: 40, // Y-axis offset
