@@ -11,9 +11,10 @@ import {
 } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { enemyPreset, playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
-import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
-import ServiceLocator from "../../services/service-locator/service-locator.service";
-import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
+import {
+  getDisplayPositionAlign as getAlign,
+  getDisplaySizeByWidthPercentage as getSize,
+} from "../../utils/layout.utils";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
@@ -175,7 +176,6 @@ export default class PlayerWidthCounterComponent extends Container {
 
   private createPlayer(): void {
     let player: Sprite;
-    const targetWidth = this.scene.scale.width * 0.12;
 
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       // Use atlas with animation
@@ -196,8 +196,8 @@ export default class PlayerWidthCounterComponent extends Container {
       player = this.scene.physics.add.sprite(0, 0, "playerSprite");
     }
 
-    const targetHeight = (targetWidth / player.width) * player.height;
-    player.setDisplaySize(targetWidth, targetHeight);
+    const { width, height } = getSize(player, playerPreset.ratio);
+    player.setDisplaySize(width, height);
     player.setName(this.playerName);
 
     this.player = player;

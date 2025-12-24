@@ -353,7 +353,7 @@ export default class SceneLayoutManager {
         if (
           Phaser.Geom.Intersects.RectangleToRectangle(enemyBounds, playerBounds)
         ) {
-          if (!state.target.enemy) return;
+          if (!state.target.enemy || !playerSprite.hitArea) return;
           this.decreasePlayerBlood(playerSprite.hitArea, state.target.enemy);
         }
       });
@@ -376,7 +376,7 @@ export default class SceneLayoutManager {
         if (
           Phaser.Geom.Intersects.RectangleToRectangle(gateBounds, playerBounds)
         ) {
-          if (!state.target.gate) return;
+          if (!state.target.gate || !state.target) return;
           this.increasePlayerCount(state.target.num, state.target.gate.name);
         }
       });

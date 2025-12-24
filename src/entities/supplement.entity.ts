@@ -1,4 +1,3 @@
-import { gamePreset } from "../configs/presets/layout.preset";
 import { supplementAfterConfig } from "../configs/presets/supplement.preset";
 import SceneLayoutManager from "../managers/layout/scene-layout.manager";
 import ServiceLocator from "../services/service-locator/service-locator.service";
@@ -14,19 +13,21 @@ export default class SupplementEntity {
 
   public update(time: number): void {
     const currentTime = time - this.state.startTime;
-    const [config] = this.entityConfig
-      .filter(
-        (config) =>
-          currentTime >= config.time &&
-          currentTime - config.time < gamePreset.preventJumpTime
-      )
+
+    const filteredEntityConfigs = this.entityConfig
+      .filter((config) => currentTime >= config.time)
       .reverse();
 
-    if (config && this.state.index !== config?.index) {
-      this.state.index = config?.index || 0;
+    this.entityConfig = this.entityConfig.filter(
+      (config) => !filteredEntityConfigs.includes(config)
+    );
+
+    if (filteredEntityConfigs.length === 0) return;
+
+    filteredEntityConfigs.forEach((config) => {
       ServiceLocator.get<SceneLayoutManager>(
         "gameAreaManager"
-      ).layoutContainers.supplement.fire(time, config);
-    }
+      ).layoutContainers.supplement.fire(currentTime, config);
+    });
   }
 }

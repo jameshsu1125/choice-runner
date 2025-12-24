@@ -97,17 +97,17 @@ export const enemyDeadEffect = (
   });
 
   // particle effect
-  const fireEmitter = scene.add.particles(enemy.x, enemy.y, graphicsName, {
-    scale: particleScale,
-    quantity: particleQuantity,
-    lifespan: particleLifespan,
-    blendMode: "ADD",
-    speed: { min: 180, max: 350 },
-    angle: { min: 0, max: 360 },
-    tint: [0xff0000, 0xffa500, 0xffff00],
-  });
+  // const fireEmitter = scene.add.particles(enemy.x, enemy.y, graphicsName, {
+  //   scale: particleScale,
+  //   quantity: particleQuantity,
+  //   lifespan: particleLifespan,
+  //   blendMode: "ADD",
+  //   speed: { min: 180, max: 350 },
+  //   angle: { min: 0, max: 360 },
+  //   tint: [0xff0000, 0xffa500, 0xffff00],
+  // });
 
-  fireEmitter.explode(particleExplode);
+  // fireEmitter.explode(particleExplode);
 };
 
 // get this code from appier team.
