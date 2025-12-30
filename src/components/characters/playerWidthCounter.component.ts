@@ -43,24 +43,18 @@ export default class PlayerWidthCounterComponent extends Container {
   private innerOffset = 2; // border thickness
   private lastPercent = -1;
 
-  private increasePlayerCount: (count: number, gateName: string) => void;
   private removePlayerByName: (name: string) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private currentDepth: number | null = null;
 
   constructor(
     scene: Phaser.Scene,
     playerName: string,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
-    increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
     depth: number,
     index: number
   ) {
     super(scene, 0, 0);
     this.playerName = playerName;
-    this.decreasePlayerBlood = decreasePlayerBlood;
-    this.increasePlayerCount = increasePlayerCount;
     this.removePlayerByName = removePlayerByName;
     this.currentDepth = depth;
     this.playerIndex = index;

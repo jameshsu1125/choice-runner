@@ -175,8 +175,6 @@ export default class SceneLayoutManager {
   private createPlayer(): PlayerComponent {
     const playerComponent = new PlayerComponent(
       this.scene,
-      this.decreasePlayerBlood.bind(this),
-      this.increasePlayerCount.bind(this),
       this.onGameOver.bind(this)
     );
     return playerComponent;
