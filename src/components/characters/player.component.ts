@@ -183,6 +183,9 @@ export class PlayerComponent extends Container {
   }
 
   private doAnimationUpgrade(): void {
+    const { max } = GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce;
+    if (this.players.length <= 0 || this.players.length >= max) return;
+
     if (this.playerUpgradeEffect) {
       this.setUpgradeEffectDisplaySizeByPlayerLength();
       this.playerUpgradeEffect.setVisible(true);

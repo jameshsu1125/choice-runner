@@ -18,7 +18,7 @@ import {
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
-  public tweenProperty = { y: -20 };
+  public tweenProperty = { y: -100, scale: 1.5 };
 
   public playerName: string;
   public blood: number = 100;
@@ -58,6 +58,12 @@ export default class PlayerWidthCounterComponent extends Container {
     this.removePlayerByName = removePlayerByName;
     this.currentDepth = depth;
     this.playerIndex = index;
+
+    if (index === 0) {
+      this.tweenProperty.scale = 1;
+      this.tweenProperty.y = 0;
+    } else if (index < 19) this.tweenProperty.scale = 1;
+    else this.tweenProperty.y = 0;
 
     this.build();
   }
@@ -190,13 +196,15 @@ export default class PlayerWidthCounterComponent extends Container {
       player = this.scene.physics.add.sprite(0, 0, "playerSprite");
     }
 
-    const { width, height } = getSize(player, playerPreset.ratio);
-    player.setDisplaySize(width, height);
     player.setName(this.playerName);
 
-    this.player = player;
+    const { width, height } = getSize(player, playerPreset.ratio);
+    player.setDisplaySize(width, height);
+
     const { depth = 0 } = playerFormation[this.playerIndex];
-    this.player.setDepth(this.currentDepth! + depth);
+    player.setDepth(this.currentDepth! + depth);
+
+    this.player = player;
   }
 
   public stopAnimationSheet(): void {
@@ -216,11 +224,11 @@ export default class PlayerWidthCounterComponent extends Container {
 
     new Tweener({
       from: this.tweenProperty,
-      to: { y: 0 },
+      to: { y: 0, scale: 1 },
       duration: 500,
       delay: Math.random() * 100,
       easing: Bezier.easeOutQuart,
-      onUpdate: (property: { y: number }) => {
+      onUpdate: (property: { y: number; scale: number }) => {
         this.tweenProperty = property;
       },
     }).play();
@@ -257,13 +265,19 @@ export default class PlayerWidthCounterComponent extends Container {
 
       const currentX = left + position.x * gap;
       const currentY = top + position.y * gap + this.tweenProperty.y;
+      this.player.setPosition(currentX + offset, currentY + offsetY);
+
+      const { width, height } = getSize(
+        this.player,
+        playerPreset.ratio * this.tweenProperty.scale
+      );
+      this.player.setDisplaySize(width, height);
 
       const { displayWidth } = this.player;
       const x = currentX + offset;
       const y = currentY + offsetY - this.hitAreaState.offset.y * displayWidth;
-
-      this.player.setPosition(currentX + offset, currentY + offsetY);
       this.hitArea?.setPosition(x, y);
+
       this.createHealthBar(currentX + offset, currentY + offsetY);
     }
   }
