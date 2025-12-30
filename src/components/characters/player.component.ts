@@ -41,7 +41,7 @@ export class PlayerComponent extends Container {
 
   private createUpgradeEffect(): void {
     this.playerUpgradeEffect = this.scene.add.sprite(0, 0, "upgradeSheet");
-    // this.playerUpgradeEffect.setVisible(false);
+    this.playerUpgradeEffect.setVisible(false);
     this.playerUpgradeEffect.setDepth(getDepthByOptions("end"));
     const [firstPlayer] = this.players;
     this.playerUpgradeEffect.setPosition(
@@ -60,9 +60,6 @@ export class PlayerComponent extends Container {
       frameRate: 12,
       hideOnComplete: true,
     });
-
-    this.playerUpgradeEffect.play("upgrade", true);
-
     this.setUpgradeEffectDisplaySizeByPlayerLength();
   }
 
