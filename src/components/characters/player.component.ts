@@ -41,12 +41,12 @@ export class PlayerComponent extends Container {
 
   private createUpgradeEffect(): void {
     this.playerUpgradeEffect = this.scene.add.sprite(0, 0, "upgradeSheet");
-    this.playerUpgradeEffect.setVisible(false);
-    this.playerUpgradeEffect.setDepth(getDepthByOptions("player") - 1);
+    // this.playerUpgradeEffect.setVisible(false);
+    this.playerUpgradeEffect.setDepth(getDepthByOptions("end"));
     const [firstPlayer] = this.players;
     this.playerUpgradeEffect.setPosition(
       firstPlayer.player?.x || 0,
-      firstPlayer.player?.y || 0
+      (firstPlayer.player?.y || 0) + playerPreset.effect.offset
     );
 
     this.playerUpgradeEffect.anims.create({
@@ -60,6 +60,10 @@ export class PlayerComponent extends Container {
       frameRate: 12,
       hideOnComplete: true,
     });
+
+    this.playerUpgradeEffect.play("upgrade", true);
+
+    this.setUpgradeEffectDisplaySizeByPlayerLength();
   }
 
   private createPlayer(count: number, autoPlaySheet: boolean = true): void {
@@ -183,13 +187,28 @@ export class PlayerComponent extends Container {
 
   private doAnimationUpgrade(): void {
     if (this.playerUpgradeEffect) {
+      this.setUpgradeEffectDisplaySizeByPlayerLength();
       this.playerUpgradeEffect.setVisible(true);
       this.playerUpgradeEffect.play("upgrade", true);
     }
   }
 
+  private setUpgradeEffectDisplaySizeByPlayerLength(): void {
+    if (!this.playerUpgradeEffect) return;
+    const { baseSize } = playerPreset.effect;
+    const { length } = this.players;
+
+    const formation = playerFormation.filter((_, index) => index < length);
+    const scale = formation.reduce((max, curr) => {
+      const maxCoordinate = Math.max(curr.x, curr.y) + 1;
+      return maxCoordinate > max ? maxCoordinate : max;
+    }, 0);
+
+    this.playerUpgradeEffect.setDisplaySize(baseSize * scale, baseSize * scale);
+  }
+
   public update(): void {
-    const { speedByInput } = playerPreset;
+    const { speedByInput, effect } = playerPreset;
     if (!this.cursors || this.players.length === 0 || !this.isStarted) return;
     const deltaX = this.cursors.left.isDown
       ? -speedByInput
@@ -202,7 +221,7 @@ export class PlayerComponent extends Container {
     if (this.players.length > 0) {
       this.playerUpgradeEffect?.setPosition(
         this.players[0].player?.x || 0,
-        this.players[0].player?.y || 0
+        (this.players[0].player?.y || 0) + effect.offset
       );
     }
   }

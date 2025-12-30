@@ -56,6 +56,10 @@ export const playerPreset = {
     width: 280,
     height: 100,
   },
+  effect: {
+    baseSize: 400,
+    offset: 50,
+  },
 };
 
 export const enemyPreset = {
