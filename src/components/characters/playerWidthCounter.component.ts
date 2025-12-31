@@ -1,3 +1,4 @@
+import { absoluteTopDepth } from "../../managers/layout/depth.manager";
 import Tweener, { Bezier } from "lesca-object-tweener";
 import {
   Container,
@@ -59,6 +60,7 @@ export default class PlayerWidthCounterComponent extends Container {
     this.currentDepth = depth;
     this.playerIndex = index;
 
+    // Adjust initial tween properties based on index
     if (index === 0) {
       this.tweenProperty.scale = 1;
       this.tweenProperty.y = 0;
@@ -88,7 +90,7 @@ export default class PlayerWidthCounterComponent extends Container {
       displayHeight * this.hitAreaState.offset.height
     );
     this.hitArea.setOrigin(0.5, 0);
-    this.hitArea.setDepth(999999);
+    this.hitArea.setDepth(absoluteTopDepth);
     this.hitArea.setVisible(this.hitAreaState.debug ? true : false);
     this.hitArea.setName(this.playerName);
   }
@@ -217,15 +219,14 @@ export default class PlayerWidthCounterComponent extends Container {
       this.player.stop();
       this.player.setFrame(0);
     }
-    // For single sprite, no animation to stop
   }
 
   public runAnimationSheet(): void {
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       this.player?.play("run", true);
     }
-    // For single sprite, no animation to play
 
+    // animate when player entry
     new Tweener({
       from: this.tweenProperty,
       to: { y: 0, scale: 1 },
@@ -244,9 +245,7 @@ export default class PlayerWidthCounterComponent extends Container {
     this.healthBar.destroy();
     this.healthBarFill.destroy();
     this.hitArea?.destroy();
-    if (this.player) {
-      this.player.destroy(true);
-    }
+    if (this.player) this.player.destroy(true);
     super.destroy(true);
   }
 

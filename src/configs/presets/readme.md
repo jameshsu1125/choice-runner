@@ -2,7 +2,7 @@
 
 ## [enterframe](https://www.npmjs.com/package/lesca-enterframe)
 
-```
+```sh
 A simple function to record time for animation.
 Because the delta provided by Phaser is not accurate, it causes entities to walk backwards.
 ```
@@ -27,6 +27,16 @@ type TEnemyConfig = {
     };
   };
 };
+
+// deploy custom enemy config like this
+// export const enemy{After|Before}Config: TEnemyConfig[] = [
+//   { time: 10000, data: { x: 200, type: "straight", blood: practiceEnemy } },
+//   { time: 13000, data: { x: 300, type: "straight", blood: practiceEnemy } },
+//   { time: 15000, data: { x: 400, type: "follow", blood: practiceEnemy } },
+//   { time: 16000, data: { x: 500, type: "straight", blood: smallEnemy } },
+//   { time: 17000, data: { x: 200, type: "straight", blood: practiceEnemy } },
+//   { time: 18000, data: { x: 300, type: "straight", blood: practiceEnemy } },
+// ];
 ```
 
 2. [gate](./gate.preset.ts)
@@ -40,6 +50,13 @@ type TGateConfig = {
     type: "gate"; // as const
   };
 };
+
+// deploy custom gate config like this
+// export const gate{After|Before}Config = [
+//   { time: 5000, data: { quadrant: 0, count: 3, type: "gate" } },
+//   { time: 15000, data: { quadrant: 1, count: 5, type: "gate" } },
+//   { time: 25000, data: { quadrant: 2, count: 7, type: "gate" } },
+// ];
 ```
 
 3. [supplement](./supplement.preset.ts)
@@ -53,4 +70,11 @@ type TSupplement = {
     type: "ARMY" | "GUN"; // as const
   };
 };
+
+// deploy custom supplement config like this
+// export const supplement{After|Before}Config = [
+//   { time: 8000, data: { quadrant: 0, count: 5, type: "ARMY" } },
+//   { time: 12000, data: { quadrant: 1, count: 3, type: "GUN" } },
+//   { time: 18000, data: { quadrant: 2, count: 7, type: "ARMY" } },
+// ];
 ```

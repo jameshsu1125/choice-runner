@@ -1,6 +1,7 @@
 import { gateState } from "../configs/presets/gate.preset";
 import { supplementState } from "../configs/presets/supplement.preset";
 
+// Generate random time ranges for enemy deployment
 export const randomEnemyRange = (
   type: "before" | "after", // deploy when game before or after start
   min: number, // minimum time

@@ -319,6 +319,7 @@ export default class SceneLayoutManager {
     if (this.isGameOver) return;
     this.layoutContainers.player.update();
     this.layoutContainers.firepower.update();
+
     this.checkEnemyPlayerCollision();
     this.checkGatePlayerCollision();
   }

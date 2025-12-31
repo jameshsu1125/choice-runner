@@ -1,4 +1,4 @@
-import { getDepthByOptions } from "../managers/layout/depth.manager";
+import { getGlobalDepth } from "../managers/layout/depth.manager";
 import { Container, Image, Scene } from "../configs/constants/constants";
 import { landingPreset } from "../configs/presets/layout.preset";
 import MainScene from "../scenes/main.scene";
@@ -25,7 +25,7 @@ export class LandingComponent extends Container {
     const { width, height } = this.scene.scale;
 
     const arrow = this.scene.add.image(0, 0, "arrow-left");
-    arrow.setDepth(getDepthByOptions("end"));
+    arrow.setDepth(getGlobalDepth("end"));
 
     const { width: arrowWidth, height: arrowHeight } = setSize(arrow, ratio);
     arrow.setDisplaySize(arrowWidth, arrowHeight);
@@ -49,7 +49,7 @@ export class LandingComponent extends Container {
     const { width, height } = this.scene.scale;
 
     const arrow = this.scene.add.image(0, 0, "arrow-right");
-    arrow.setDepth(getDepthByOptions("end"));
+    arrow.setDepth(getGlobalDepth("end"));
 
     const { width: arrowWidth, height: arrowHeight } = setSize(arrow, ratio);
     arrow.setDisplaySize(arrowWidth, arrowHeight);
@@ -85,7 +85,7 @@ export class LandingComponent extends Container {
 
     finger.setDisplaySize(fingerWidth, fingerHeight);
     finger.setPosition(x, y);
-    finger.setDepth(getDepthByOptions("end"));
+    finger.setDepth(getGlobalDepth("end"));
 
     this.scene.tweens.add({
       targets: finger,

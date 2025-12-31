@@ -348,8 +348,6 @@ export default class EnemyWithCounterComponent extends Container {
     if (this.enemy) {
       enemyDeadEffect(
         this.enemy,
-        this.graphicsName,
-        this.config?.blood.type || "ghost",
         () => {
           [this.healthBarBorder, this.healthBarFill].forEach((item) => {
             item.setVisible(false);

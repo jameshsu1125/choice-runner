@@ -1,5 +1,6 @@
 import { TQuadrant } from "../configs/constants/constants";
 
+// Utility to get unique random quadrants
 export const randomQuadrant = (count: number = 2) => {
   const quadrants: TQuadrant[] = [];
   while (quadrants.length < count) {

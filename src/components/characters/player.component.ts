@@ -9,7 +9,7 @@ import {
 } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import PlayerWidthCounterComponent from "./playerWidthCounter.component";
 
 export class PlayerComponent extends Container {
@@ -24,7 +24,7 @@ export class PlayerComponent extends Container {
   private index = 0;
   private onGameOver: () => void;
 
-  private currentDepth = getDepthByOptions("player");
+  private currentDepth = getGlobalDepth("player");
 
   constructor(scene: Phaser.Scene, onGameOver: () => void) {
     super(scene, 0, 0);
@@ -42,7 +42,7 @@ export class PlayerComponent extends Container {
   private createUpgradeEffect(): void {
     this.playerUpgradeEffect = this.scene.add.sprite(0, 0, "upgradeSheet");
     this.playerUpgradeEffect.setVisible(false);
-    this.playerUpgradeEffect.setDepth(getDepthByOptions("end"));
+    this.playerUpgradeEffect.setDepth(getGlobalDepth("end"));
     const [firstPlayer] = this.players;
     this.playerUpgradeEffect.setPosition(
       firstPlayer.player?.x || 0,

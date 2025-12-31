@@ -5,7 +5,7 @@ import {
   enemyBeforeConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import { TEnemyState } from "./enemy.misc";
 import EnemyWidthCounterComponent from "./enemyWithCounter.component";
 
@@ -64,7 +64,7 @@ export class EnemyComponent extends Container {
       this.onGameVictory
     );
 
-    enemy.setDepths(getDepthByOptions("character", time));
+    enemy.setDepths(getGlobalDepth("character", time));
     this.enemyState.push({ startTime: time, target: enemy });
   }
 

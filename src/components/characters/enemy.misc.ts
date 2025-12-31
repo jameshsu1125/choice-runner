@@ -35,22 +35,12 @@ export const hitEnemyEffect = (enemy: Sprite) => {
 
 export const enemyDeadEffect = (
   enemy: Sprite,
-  graphicsName: string,
-  type: "ghost" | "boss",
   onStart: () => void,
   onComplete: () => void
 ) => {
   const shakeIntensity = 3; // Intensity of the shake effect
   const shakeDuration = 50; // Duration of the shake effect
-
   const colorDuration = 400; // Duration of the color effect
-
-  // particle effect parameters, boss has more intense effects
-  const particleLifespan =
-    type === "boss" ? { min: 1000, max: 2000 } : { min: 100, max: 500 };
-  const particleScale = { start: enemy.scale, end: 0 };
-  const particleQuantity = type === "boss" ? 60 : 40;
-  const particleExplode = type === "boss" ? 60 : 30;
 
   onStart?.();
 
@@ -95,19 +85,6 @@ export const enemyDeadEffect = (
       onComplete?.();
     },
   });
-
-  // particle effect
-  // const fireEmitter = scene.add.particles(enemy.x, enemy.y, graphicsName, {
-  //   scale: particleScale,
-  //   quantity: particleQuantity,
-  //   lifespan: particleLifespan,
-  //   blendMode: "ADD",
-  //   speed: { min: 180, max: 350 },
-  //   angle: { min: 0, max: 360 },
-  //   tint: [0xff0000, 0xffa500, 0xffff00],
-  // });
-
-  // fireEmitter.explode(particleExplode);
 };
 
 // get this code from appier team.

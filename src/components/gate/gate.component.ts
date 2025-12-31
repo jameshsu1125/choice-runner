@@ -9,7 +9,7 @@ import {
   gateBeforeConfig,
 } from "../../configs/presets/gate.preset";
 import { gatePreset } from "../../configs/presets/layout.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import { TGateState } from "./gate.misc";
 import GateWithCounterComponent from "./gateWithCounter.component";
 
@@ -67,7 +67,7 @@ export class GateComponent extends Container {
       this.increaseGateCount,
       this.increasePlayerCount
     );
-    gate.setDepths(getDepthByOptions("gate", time));
+    gate.setDepths(getGlobalDepth("gate", time));
 
     this.gateState.push({
       startTime: time,

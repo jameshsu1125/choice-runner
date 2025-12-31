@@ -7,7 +7,7 @@ import {
 } from "../../configs/constants/constants";
 import { Easing } from "../../configs/constants/layout.constants";
 import { finishLinePreset } from "../../configs/presets/layout.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import {
   getDisplayPositionByBorderAlign as getAlign,
   getDisplaySizeByWidthPercentage as getSize,
@@ -35,7 +35,7 @@ export class FinishComponent extends Container {
     super(scene, 0, 0);
     this.createMask();
     this.onGameVictory = onGameVictory;
-    this.setDepth(getDepthByOptions("finishLine"));
+    this.setDepth(getGlobalDepth("finishLine"));
   }
 
   private createMask(): void {

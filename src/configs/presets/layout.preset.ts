@@ -1,5 +1,6 @@
 import { GAME_MECHANIC_CONSTANTS } from "../constants/game-mechanic/game-mechanic.constants";
 
+// Config related to layout design
 export const gamePreset = {
   perspective: 0.1,
   delta: 16, // default delta when game are not lag

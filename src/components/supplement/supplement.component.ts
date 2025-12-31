@@ -8,7 +8,7 @@ import {
   supplementAfterConfig,
   supplementBeforeConfig,
 } from "../../configs/presets/supplement.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import { TConfig, TSupplementState } from "./supplement.misc";
 import SupplementWithCounterComponent from "./supplementWithCounter.component";
 
@@ -74,7 +74,7 @@ export class SupplementComponent extends Container {
       startTime: time,
       target: supplement,
     });
-    const depth = getDepthByOptions("supplement", time);
+    const depth = getGlobalDepth("supplement", time);
     supplement.setDepths(depth);
     if (time >= 0) supplement.doRollingAnimation();
   }

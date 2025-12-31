@@ -32,7 +32,7 @@ export const supplementAfterConfig: {
                 (supplementState.count.after.max -
                   supplementState.count.after.min)
           ) *
-          (index + 1),
+          (index + 1), // increase count by index
       },
     }));
   })

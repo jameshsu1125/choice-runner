@@ -26,7 +26,7 @@ export const gateAfterConfig: {
         type: "gate" as const,
         quadrant: quadrant[i] || (0 as TQuadrant),
         count: Math.floor(
-          gateState.count.after.min * (index + 1) +
+          gateState.count.after.min * (index + 1) + // increase count by index
             Math.random() *
               (gateState.count.after.max - gateState.count.after.min)
         ),
