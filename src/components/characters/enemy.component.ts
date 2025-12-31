@@ -14,19 +14,16 @@ export class EnemyComponent extends Container {
   public enemyState: TEnemyState[] = [];
 
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
 
   constructor(
     scene: Phaser.Scene,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
 
     this.decreaseEnemyBlood = decreaseEnemyBlood;
-    this.decreasePlayerBlood = decreasePlayerBlood;
     this.onGameVictory = onGameVictory;
     this.setPosition(-scene.scale.width / 2, -scene.scale.height / 2);
 
@@ -64,7 +61,6 @@ export class EnemyComponent extends Container {
       config,
       this.removeStateByName.bind(this),
       this.decreaseEnemyBlood,
-      this.decreasePlayerBlood,
       this.onGameVictory
     );
 

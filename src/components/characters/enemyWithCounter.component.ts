@@ -45,7 +45,6 @@ export default class EnemyWithCounterComponent extends Container {
 
   private removeStateByName: (name: string) => void;
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
   private sheetName: string = "";
 
@@ -57,14 +56,12 @@ export default class EnemyWithCounterComponent extends Container {
     config: (typeof enemyAfterConfig)[number]["data"],
     removeStateByName: (name: string) => void,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
     this.enemyName = name;
     this.removeStateByName = removeStateByName;
     this.decreaseEnemyBlood = decreaseEnemyBlood;
-    this.decreasePlayerBlood = decreasePlayerBlood;
     this.onGameVictory = onGameVictory;
     this.config = config;
     this.sheetName =

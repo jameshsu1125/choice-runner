@@ -60,11 +60,19 @@ export const enemyAfterConfig: TEnemyConfig[] = [
   { time: 30000, data: { x: 220, type: "follow", blood: boss } },
 ];
 
+// TODO:testing practice enemy count from URL param. remove before production.
+const enemyCount = window.location.search
+  .replace("?", "")
+  .split("&")
+  .find((param) => param.startsWith("count="))
+  ?.split("=")[1];
+const practiceEnemyCount = enemyCount ? parseInt(enemyCount, 10) : 10;
+
 export const enemyBeforeConfig: TEnemyConfig[] = randomEnemyRange(
   "before",
   -7000,
   0,
-  10
+  practiceEnemyCount
 ).map((time) => {
   return {
     time,
