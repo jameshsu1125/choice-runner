@@ -1,3 +1,4 @@
+import { DebugOverlay } from "../../services/event-bus/debug-overlay";
 import { randomQuadrant } from "../../utils/quadrant.utils";
 import { TQuadrant } from "../constants/constants";
 
@@ -54,6 +55,9 @@ export const gateBeforeConfig: {
     }));
   })
   .flat();
+
+DebugOverlay.getInstance().log("gateAfterConfig", gateAfterConfig);
+DebugOverlay.getInstance().log("gateBeforeConfig", gateBeforeConfig);
 
 // deploy custom gate config like this
 // export const gate{After|Before}Config = [

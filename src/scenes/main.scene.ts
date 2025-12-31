@@ -11,7 +11,7 @@ import ServiceLocator from "../services/service-locator/service-locator.service"
 import ServiceRegistry from "../services/service-registry.service";
 import EndScreenSystem from "../systems/end-screen.system";
 import { openStoreUrl } from "../utils/storeview";
-// import { DebugOverlay } from "../services/event-bus/debug-overlay";
+import { DebugOverlay } from "../services/event-bus/debug-overlay";
 
 export default class MainScene extends Phaser.Scene {
   private firepowerEntity?: FirepowerEntity;
@@ -31,7 +31,7 @@ export default class MainScene extends Phaser.Scene {
    * This fn gets called by Phaser.js when the scene is created
    */
   create() {
-    // DebugOverlay.getInstance();
+    DebugOverlay.getInstance();
     new ServiceRegistry(this);
     this.initializeChoreography();
     this.initEventListeners();

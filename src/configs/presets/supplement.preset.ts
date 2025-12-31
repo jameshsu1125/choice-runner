@@ -1,3 +1,4 @@
+import { DebugOverlay } from "../../services/event-bus/debug-overlay";
 import { randomQuadrant } from "../../utils/quadrant.utils";
 import { TQuadrant } from "../constants/constants";
 
@@ -59,6 +60,11 @@ export const supplementBeforeConfig: {
   })
   .flat();
 
+DebugOverlay.getInstance().log("supplementAfterConfig", supplementAfterConfig);
+DebugOverlay.getInstance().log(
+  "supplementBeforeConfig",
+  supplementBeforeConfig
+);
 // deploy custom supplement config like this
 // export const supplement{After|Before}Config = [
 //   { time: 8000, data: { quadrant: 0, count: 5, type: "ARMY" } },

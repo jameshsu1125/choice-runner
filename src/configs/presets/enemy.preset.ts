@@ -1,3 +1,4 @@
+import { DebugOverlay } from "../../services/event-bus/debug-overlay";
 import { randomEnemyRange } from "../../utils/misc.utils";
 
 type TBlood = {
@@ -91,6 +92,9 @@ export const enemyBeforeConfig: TEnemyConfig[] = randomEnemyRange(
     },
   };
 });
+
+DebugOverlay.getInstance().log("enemyBeforeConfig", enemyBeforeConfig);
+DebugOverlay.getInstance().log("enemyAfterConfig", enemyAfterConfig);
 
 // deploy custom enemy config like this
 // export const enemy{After|Before}Config: TEnemyConfig[] = [
