@@ -86,6 +86,13 @@ export class PlayerComponent extends Container {
     this.calculatePlayersPosition();
   }
 
+  private resetDepths(): void {
+    this.players.forEach((player, index) => {
+      const { depth = 0 } = playerFormation[index];
+      player.resetDepth(this.currentDepth! + depth);
+    });
+  }
+
   private setCurrentPositionByUserInput(targetX: number, _: number): void {
     const [player] = this.players;
     if (player.player === null) return;
@@ -127,6 +134,7 @@ export class PlayerComponent extends Container {
         });
       }
     }
+    this.resetDepths();
   }
 
   public decreaseBlood(playerHitArea: Sprite): void {
@@ -137,6 +145,7 @@ export class PlayerComponent extends Container {
     if (playerComponent) {
       playerComponent.decreaseBlood();
     }
+    this.resetDepths();
   }
 
   public onStart(): void {

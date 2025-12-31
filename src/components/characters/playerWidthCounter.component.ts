@@ -207,6 +207,10 @@ export default class PlayerWidthCounterComponent extends Container {
     this.player = player;
   }
 
+  public resetDepth(depth: number): void {
+    this.player?.setDepth(depth);
+  }
+
   public stopAnimationSheet(): void {
     if (!this.player) return;
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
