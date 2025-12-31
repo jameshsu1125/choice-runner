@@ -170,6 +170,7 @@ export default class EnemyWithCounterComponent extends Container {
           firepower,
           () => {
             if (this.isDestroyed) return;
+            if (enemy.y < enemy.displayHeight / 2) return; // ignore top area collision
             this.decreaseEnemyBlood(enemy, firepower);
           },
           undefined,
@@ -180,6 +181,7 @@ export default class EnemyWithCounterComponent extends Container {
           firepower,
           () => {
             if (this.isDestroyed) return;
+            if (enemy.y < enemy.displayHeight / 2) return; // ignore top area collision
             this.decreaseEnemyBlood(enemy, firepower);
           },
           undefined,
