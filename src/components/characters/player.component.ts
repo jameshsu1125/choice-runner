@@ -9,34 +9,26 @@ import {
 } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import PlayerWidthCounterComponent from "./playerWidthCounter.component";
 
 export class PlayerComponent extends Container {
   public players: PlayerWidthCounterComponent[] = [];
+  private playerUpgradeEffect?: Phaser.GameObjects.Sprite;
+
   private cursors?: CursorKeys = undefined;
 
   private isStarted = false;
   private touchState = { isDown: false, playerX: 0, pointerX: 0 };
   public playersCount = GAME_MECHANIC_CONSTANTS.playerReinforce;
   private index = 0;
-
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
-
-  private increasePlayerCount: (count: number, gateName: string) => void;
   private onGameOver: () => void;
 
-  private currentDepth = getDepthByOptions("player");
+  private currentDepth = getGlobalDepth("player");
 
-  constructor(
-    scene: Phaser.Scene,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
-    increasePlayerCount: (count: number, gateName: string) => void,
-    onGameOver: () => void
-  ) {
+  constructor(scene: Phaser.Scene, onGameOver: () => void) {
     super(scene, 0, 0);
-    this.decreasePlayerBlood = decreasePlayerBlood;
-    this.increasePlayerCount = increasePlayerCount;
+
     this.onGameOver = onGameOver;
     this.build();
   }
@@ -44,6 +36,31 @@ export class PlayerComponent extends Container {
   private build(): void {
     this.cursors = this.scene.input.keyboard?.createCursorKeys();
     this.createPlayer(this.playersCount, false);
+    this.createUpgradeEffect();
+  }
+
+  private createUpgradeEffect(): void {
+    this.playerUpgradeEffect = this.scene.add.sprite(0, 0, "upgradeSheet");
+    this.playerUpgradeEffect.setVisible(false);
+    this.playerUpgradeEffect.setDepth(getGlobalDepth("end"));
+    const [firstPlayer] = this.players;
+    this.playerUpgradeEffect.setPosition(
+      firstPlayer.player?.x || 0,
+      (firstPlayer.player?.y || 0) + playerPreset.effect.offset
+    );
+
+    this.playerUpgradeEffect.anims.create({
+      key: "upgrade",
+      frames: this.scene.anims.generateFrameNames("upgradeSheet", {
+        prefix: "",
+        start: 1,
+        end: 16,
+        zeroPad: 3,
+      }),
+      frameRate: 12,
+      hideOnComplete: true,
+    });
+    this.setUpgradeEffectDisplaySizeByPlayerLength();
   }
 
   private createPlayer(count: number, autoPlaySheet: boolean = true): void {
@@ -57,8 +74,6 @@ export class PlayerComponent extends Container {
       const player = new PlayerWidthCounterComponent(
         this.scene,
         `player-${this.index++}`,
-        this.decreasePlayerBlood,
-        this.increasePlayerCount,
         this.removePlayerByName.bind(this),
         this.currentDepth,
         this.players.length
@@ -69,6 +84,13 @@ export class PlayerComponent extends Container {
       }
     });
     this.calculatePlayersPosition();
+  }
+
+  private resetDepths(): void {
+    this.players.forEach((player, index) => {
+      const { depth = 0 } = playerFormation[index];
+      player.resetDepth(this.currentDepth! + depth);
+    });
   }
 
   private setCurrentPositionByUserInput(targetX: number, _: number): void {
@@ -98,8 +120,10 @@ export class PlayerComponent extends Container {
   }
 
   public increasePlayersCount(count: number = 1): void {
-    if (count > 0) this.createPlayer(count);
-    else {
+    if (count > 0) {
+      this.createPlayer(count);
+      this.doAnimationUpgrade();
+    } else {
       if (this.players.length - Math.abs(count) <= 0) {
         this.players.forEach((player) => player.destroy());
         this.onGameOver();
@@ -110,6 +134,7 @@ export class PlayerComponent extends Container {
         });
       }
     }
+    this.resetDepths();
   }
 
   public decreaseBlood(playerHitArea: Sprite): void {
@@ -120,6 +145,7 @@ export class PlayerComponent extends Container {
     if (playerComponent) {
       playerComponent.decreaseBlood();
     }
+    this.resetDepths();
   }
 
   public onStart(): void {
@@ -165,8 +191,33 @@ export class PlayerComponent extends Container {
     this.players.forEach((player) => player.stopAnimationSheet());
   }
 
+  private doAnimationUpgrade(): void {
+    const { max } = GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce;
+    if (this.players.length <= 0 || this.players.length >= max) return;
+
+    if (this.playerUpgradeEffect) {
+      this.setUpgradeEffectDisplaySizeByPlayerLength();
+      this.playerUpgradeEffect.setVisible(true);
+      this.playerUpgradeEffect.play("upgrade", true);
+    }
+  }
+
+  private setUpgradeEffectDisplaySizeByPlayerLength(): void {
+    if (!this.playerUpgradeEffect) return;
+    const { baseSize } = playerPreset.effect;
+    const { length } = this.players;
+
+    const formation = playerFormation.filter((_, index) => index < length);
+    const scale = formation.reduce((max, curr) => {
+      const maxCoordinate = Math.max(curr.x, curr.y) + 1;
+      return maxCoordinate > max ? maxCoordinate : max;
+    }, 0);
+
+    this.playerUpgradeEffect.setDisplaySize(baseSize * scale, baseSize * scale);
+  }
+
   public update(): void {
-    const { speedByInput } = playerPreset;
+    const { speedByInput, effect } = playerPreset;
     if (!this.cursors || this.players.length === 0 || !this.isStarted) return;
     const deltaX = this.cursors.left.isDown
       ? -speedByInput
@@ -175,5 +226,12 @@ export class PlayerComponent extends Container {
       : 0;
     const targetX = this.x + deltaX;
     this.setCurrentPositionByUserInput(targetX, deltaX);
+
+    if (this.players.length > 0) {
+      this.playerUpgradeEffect?.setPosition(
+        this.players[0].player?.x || 0,
+        (this.players[0].player?.y || 0) + effect.offset
+      );
+    }
   }
 }

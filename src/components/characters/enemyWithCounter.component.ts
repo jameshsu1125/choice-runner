@@ -45,7 +45,6 @@ export default class EnemyWithCounterComponent extends Container {
 
   private removeStateByName: (name: string) => void;
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
   private sheetName: string = "";
 
@@ -57,14 +56,12 @@ export default class EnemyWithCounterComponent extends Container {
     config: (typeof enemyAfterConfig)[number]["data"],
     removeStateByName: (name: string) => void,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
     this.enemyName = name;
     this.removeStateByName = removeStateByName;
     this.decreaseEnemyBlood = decreaseEnemyBlood;
-    this.decreasePlayerBlood = decreasePlayerBlood;
     this.onGameVictory = onGameVictory;
     this.config = config;
     this.sheetName =
@@ -173,6 +170,7 @@ export default class EnemyWithCounterComponent extends Container {
           firepower,
           () => {
             if (this.isDestroyed) return;
+            if (enemy.y < enemy.displayHeight / 2) return; // ignore top area collision
             this.decreaseEnemyBlood(enemy, firepower);
           },
           undefined,
@@ -183,6 +181,7 @@ export default class EnemyWithCounterComponent extends Container {
           firepower,
           () => {
             if (this.isDestroyed) return;
+            if (enemy.y < enemy.displayHeight / 2) return; // ignore top area collision
             this.decreaseEnemyBlood(enemy, firepower);
           },
           undefined,
@@ -349,8 +348,6 @@ export default class EnemyWithCounterComponent extends Container {
     if (this.enemy) {
       enemyDeadEffect(
         this.enemy,
-        this.graphicsName,
-        this.config?.blood.type || "ghost",
         () => {
           [this.healthBarBorder, this.healthBarFill].forEach((item) => {
             item.setVisible(false);

@@ -156,7 +156,6 @@ export default class SceneLayoutManager {
     const enemyComponent = new EnemyComponent(
       this.scene,
       this.decreaseEnemyBlood.bind(this),
-      this.decreasePlayerBlood.bind(this),
       this.onGameVictory.bind(this)
     );
     return enemyComponent;
@@ -175,8 +174,6 @@ export default class SceneLayoutManager {
   private createPlayer(): PlayerComponent {
     const playerComponent = new PlayerComponent(
       this.scene,
-      this.decreasePlayerBlood.bind(this),
-      this.increasePlayerCount.bind(this),
       this.onGameOver.bind(this)
     );
     return playerComponent;
@@ -322,6 +319,7 @@ export default class SceneLayoutManager {
     if (this.isGameOver) return;
     this.layoutContainers.player.update();
     this.layoutContainers.firepower.update();
+
     this.checkEnemyPlayerCollision();
     this.checkGatePlayerCollision();
   }
@@ -353,7 +351,7 @@ export default class SceneLayoutManager {
         if (
           Phaser.Geom.Intersects.RectangleToRectangle(enemyBounds, playerBounds)
         ) {
-          if (!state.target.enemy) return;
+          if (!state.target.enemy || !playerSprite.hitArea) return;
           this.decreasePlayerBlood(playerSprite.hitArea, state.target.enemy);
         }
       });
@@ -376,7 +374,7 @@ export default class SceneLayoutManager {
         if (
           Phaser.Geom.Intersects.RectangleToRectangle(gateBounds, playerBounds)
         ) {
-          if (!state.target.gate) return;
+          if (!state.target.gate || !state.target) return;
           this.increasePlayerCount(state.target.num, state.target.gate.name);
         }
       });

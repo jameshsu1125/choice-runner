@@ -1,3 +1,4 @@
+import { DebugOverlay } from "../../services/event-bus/debug-overlay";
 import { randomQuadrant } from "../../utils/quadrant.utils";
 import { TQuadrant } from "../constants/constants";
 
@@ -31,7 +32,7 @@ export const supplementAfterConfig: {
                 (supplementState.count.after.max -
                   supplementState.count.after.min)
           ) *
-          (index + 1),
+          (index + 1), // increase count by index
       },
     }));
   })
@@ -58,3 +59,15 @@ export const supplementBeforeConfig: {
     }));
   })
   .flat();
+
+DebugOverlay.getInstance().log("supplementAfterConfig", supplementAfterConfig);
+DebugOverlay.getInstance().log(
+  "supplementBeforeConfig",
+  supplementBeforeConfig
+);
+// deploy custom supplement config like this
+// export const supplement{After|Before}Config = [
+//   { time: 8000, data: { quadrant: 0, count: 5, type: "ARMY" } },
+//   { time: 12000, data: { quadrant: 1, count: 3, type: "GUN" } },
+//   { time: 18000, data: { quadrant: 2, count: 7, type: "ARMY" } },
+// ];

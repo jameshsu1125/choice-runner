@@ -102,5 +102,11 @@ export default class PreloadScene extends Phaser.Scene {
       window.base64Map["assets"]["supplement-shipment-broken-atlas"],
       window.base64Map["assets"]["supplement-shipment-broken-atlas-json"]
     );
+
+    this.load.atlas(
+      "upgradeSheet",
+      window.base64Map["assets"]["upgrade-atlas"],
+      window.base64Map["assets"]["upgrade-atlas-json"]
+    );
   }
 }

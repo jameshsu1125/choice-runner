@@ -1,3 +1,4 @@
+import { DebugOverlay } from "../../services/event-bus/debug-overlay";
 import { randomQuadrant } from "../../utils/quadrant.utils";
 import { TQuadrant } from "../constants/constants";
 
@@ -25,7 +26,7 @@ export const gateAfterConfig: {
         type: "gate" as const,
         quadrant: quadrant[i] || (0 as TQuadrant),
         count: Math.floor(
-          gateState.count.after.min * (index + 1) +
+          gateState.count.after.min * (index + 1) + // increase count by index
             Math.random() *
               (gateState.count.after.max - gateState.count.after.min)
         ),
@@ -54,3 +55,13 @@ export const gateBeforeConfig: {
     }));
   })
   .flat();
+
+DebugOverlay.getInstance().log("gateAfterConfig", gateAfterConfig);
+DebugOverlay.getInstance().log("gateBeforeConfig", gateBeforeConfig);
+
+// deploy custom gate config like this
+// export const gate{After|Before}Config = [
+//   { time: 5000, data: { quadrant: 0, count: 3, type: "gate" } },
+//   { time: 15000, data: { quadrant: 1, count: 5, type: "gate" } },
+//   { time: 25000, data: { quadrant: 2, count: 7, type: "gate" } },
+// ];

@@ -6,7 +6,7 @@ import {
 } from "../configs/constants/constants";
 import { GAME_MECHANIC_CONSTANTS } from "../configs/constants/game-mechanic/game-mechanic.constants";
 import { endPreset } from "../configs/presets/layout.preset";
-import { getDepthByOptions } from "../managers/layout/depth.manager";
+import { getGlobalDepth } from "../managers/layout/depth.manager";
 import {
   getDisplayPositionAlign as getAlign,
   getDisplaySizeByWidthPercentage as getSize,
@@ -28,7 +28,7 @@ export class EndComponent extends Container {
   private buttonScale: number = 1;
   private hasOpenStoreView: boolean = false;
 
-  private currentDepth = getDepthByOptions("end");
+  private currentDepth = getGlobalDepth("end");
 
   constructor(scene: Scene) {
     super(scene);

@@ -1,3 +1,4 @@
+import { absoluteTopDepth } from "../../managers/layout/depth.manager";
 import Tweener, { Bezier } from "lesca-object-tweener";
 import {
   Container,
@@ -11,13 +12,14 @@ import {
 } from "../../configs/constants/game-mechanic/game-mechanic.constants";
 import { enemyPreset, playerPreset } from "../../configs/presets/layout.preset";
 import { playerFormation } from "../../configs/presets/player.preset";
-import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
-import ServiceLocator from "../../services/service-locator/service-locator.service";
-import { getDisplayPositionAlign as getAlign } from "../../utils/layout.utils";
+import {
+  getDisplayPositionAlign as getAlign,
+  getDisplaySizeByWidthPercentage as getSize,
+} from "../../utils/layout.utils";
 
 export default class PlayerWidthCounterComponent extends Container {
   private isDestroyed = false;
-  public tweenProperty = { y: -20 };
+  public tweenProperty = { y: -100, scale: 1.5 };
 
   public playerName: string;
   public blood: number = 100;
@@ -42,27 +44,28 @@ export default class PlayerWidthCounterComponent extends Container {
   private innerOffset = 2; // border thickness
   private lastPercent = -1;
 
-  private increasePlayerCount: (count: number, gateName: string) => void;
   private removePlayerByName: (name: string) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private currentDepth: number | null = null;
 
   constructor(
     scene: Phaser.Scene,
     playerName: string,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
-    increasePlayerCount: (count: number, gateName: string) => void,
     removePlayerByName: (name: string) => void,
     depth: number,
     index: number
   ) {
     super(scene, 0, 0);
     this.playerName = playerName;
-    this.decreasePlayerBlood = decreasePlayerBlood;
-    this.increasePlayerCount = increasePlayerCount;
     this.removePlayerByName = removePlayerByName;
     this.currentDepth = depth;
     this.playerIndex = index;
+
+    // Adjust initial tween properties based on index
+    if (index === 0) {
+      this.tweenProperty.scale = 1;
+      this.tweenProperty.y = 0;
+    } else if (index < 19) this.tweenProperty.scale = 1;
+    else this.tweenProperty.y = 0;
 
     this.build();
   }
@@ -87,7 +90,7 @@ export default class PlayerWidthCounterComponent extends Container {
       displayHeight * this.hitAreaState.offset.height
     );
     this.hitArea.setOrigin(0.5, 0);
-    this.hitArea.setDepth(999999);
+    this.hitArea.setDepth(absoluteTopDepth);
     this.hitArea.setVisible(this.hitAreaState.debug ? true : false);
     this.hitArea.setName(this.playerName);
   }
@@ -175,7 +178,6 @@ export default class PlayerWidthCounterComponent extends Container {
 
   private createPlayer(): void {
     let player: Sprite;
-    const targetWidth = this.scene.scale.width * 0.12;
 
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       // Use atlas with animation
@@ -196,13 +198,19 @@ export default class PlayerWidthCounterComponent extends Container {
       player = this.scene.physics.add.sprite(0, 0, "playerSprite");
     }
 
-    const targetHeight = (targetWidth / player.width) * player.height;
-    player.setDisplaySize(targetWidth, targetHeight);
     player.setName(this.playerName);
 
-    this.player = player;
+    const { width, height } = getSize(player, playerPreset.ratio);
+    player.setDisplaySize(width, height);
+
     const { depth = 0 } = playerFormation[this.playerIndex];
-    this.player.setDepth(this.currentDepth! + depth);
+    player.setDepth(this.currentDepth! + depth);
+
+    this.player = player;
+  }
+
+  public resetDepth(depth: number): void {
+    this.player?.setDepth(depth);
   }
 
   public stopAnimationSheet(): void {
@@ -211,22 +219,21 @@ export default class PlayerWidthCounterComponent extends Container {
       this.player.stop();
       this.player.setFrame(0);
     }
-    // For single sprite, no animation to stop
   }
 
   public runAnimationSheet(): void {
     if (GAME_MECHANIC_CONSTANTS.usePlayerAtlas) {
       this.player?.play("run", true);
     }
-    // For single sprite, no animation to play
 
+    // animate when player entry
     new Tweener({
       from: this.tweenProperty,
-      to: { y: 0 },
+      to: { y: 0, scale: 1 },
       duration: 500,
       delay: Math.random() * 100,
       easing: Bezier.easeOutQuart,
-      onUpdate: (property: { y: number }) => {
+      onUpdate: (property: { y: number; scale: number }) => {
         this.tweenProperty = property;
       },
     }).play();
@@ -238,9 +245,7 @@ export default class PlayerWidthCounterComponent extends Container {
     this.healthBar.destroy();
     this.healthBarFill.destroy();
     this.hitArea?.destroy();
-    if (this.player) {
-      this.player.destroy(true);
-    }
+    if (this.player) this.player.destroy(true);
     super.destroy(true);
   }
 
@@ -263,13 +268,19 @@ export default class PlayerWidthCounterComponent extends Container {
 
       const currentX = left + position.x * gap;
       const currentY = top + position.y * gap + this.tweenProperty.y;
+      this.player.setPosition(currentX + offset, currentY + offsetY);
+
+      const { width, height } = getSize(
+        this.player,
+        playerPreset.ratio * this.tweenProperty.scale
+      );
+      this.player.setDisplaySize(width, height);
 
       const { displayWidth } = this.player;
       const x = currentX + offset;
       const y = currentY + offsetY - this.hitAreaState.offset.y * displayWidth;
-
-      this.player.setPosition(currentX + offset, currentY + offsetY);
       this.hitArea?.setPosition(x, y);
+
       this.createHealthBar(currentX + offset, currentY + offsetY);
     }
   }

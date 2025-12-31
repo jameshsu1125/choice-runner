@@ -14,7 +14,6 @@ import {
 } from "../../configs/presets/supplement.preset";
 
 // Define depth values for all layout elements
-
 type DepthType =
   | "character"
   | "firepower"
@@ -42,7 +41,10 @@ const depthState = {
     totalDepth * 2 + 1000 + GAME_MECHANIC_CONFIG_SCHEMA.playerReinforce.max * 3,
 };
 
-export const getDepthByOptions = (type: DepthType, time?: number) => {
+export const absoluteTopDepth = 999999;
+
+// Get depth value based on layout type and time
+export const getGlobalDepth = (type: DepthType, time?: number) => {
   if (
     type === "end" ||
     type === "firepower" ||

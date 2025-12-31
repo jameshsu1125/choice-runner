@@ -6,7 +6,7 @@ import {
   gamePreset,
   gatePreset,
 } from "../../configs/presets/layout.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import SceneLayoutManager from "../../managers/layout/scene-layout.manager";
 import ServiceLocator from "../../services/service-locator/service-locator.service";
 import {
@@ -61,7 +61,7 @@ export class FirepowerComponent extends Container {
       ).layoutContainers.player;
 
     this.build();
-    this.setDepth(getDepthByOptions("firepower"));
+    this.setDepth(getGlobalDepth("firepower"));
   }
 
   private build(): void {

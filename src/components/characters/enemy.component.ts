@@ -5,7 +5,7 @@ import {
   enemyBeforeConfig,
 } from "../../configs/presets/enemy.preset";
 import { enemyPreset } from "../../configs/presets/layout.preset";
-import { getDepthByOptions } from "../../managers/layout/depth.manager";
+import { getGlobalDepth } from "../../managers/layout/depth.manager";
 import { TEnemyState } from "./enemy.misc";
 import EnemyWidthCounterComponent from "./enemyWithCounter.component";
 
@@ -14,19 +14,16 @@ export class EnemyComponent extends Container {
   public enemyState: TEnemyState[] = [];
 
   private decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void;
-  private decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void;
   private onGameVictory: () => void;
 
   constructor(
     scene: Phaser.Scene,
     decreaseEnemyBlood: (enemy: Sprite, firepower: Sprite) => void,
-    decreasePlayerBlood: (playerHitArea: Sprite, enemy: Sprite) => void,
     onGameVictory: () => void
   ) {
     super(scene, 0, 0);
 
     this.decreaseEnemyBlood = decreaseEnemyBlood;
-    this.decreasePlayerBlood = decreasePlayerBlood;
     this.onGameVictory = onGameVictory;
     this.setPosition(-scene.scale.width / 2, -scene.scale.height / 2);
 
@@ -64,11 +61,10 @@ export class EnemyComponent extends Container {
       config,
       this.removeStateByName.bind(this),
       this.decreaseEnemyBlood,
-      this.decreasePlayerBlood,
       this.onGameVictory
     );
 
-    enemy.setDepths(getDepthByOptions("character", time));
+    enemy.setDepths(getGlobalDepth("character", time));
     this.enemyState.push({ startTime: time, target: enemy });
   }
 
