@@ -42,9 +42,17 @@ const boss: TBlood = {
   color: 0xff6600,
 };
 
+// TODO:testing practice enemy count from URL param. remove before production.
+const after = window.location.search
+  .replace("?", "")
+  .split("&")
+  .find((param) => param.startsWith("after="))
+  ?.split("=")[1];
+const enemyCount = after ? parseInt(after, 10) : 60;
+
 // config need to split before and after game start for stage deploy.
 export const enemyAfterConfig: TEnemyConfig[] = [
-  ...randomEnemyRange("after", 0, 29999, 60).map(() => {
+  ...randomEnemyRange("after", 0, 29999, enemyCount).map(() => {
     return {
       time: 0 + Math.floor(Math.random() * 29999),
       data: {
@@ -61,12 +69,12 @@ export const enemyAfterConfig: TEnemyConfig[] = [
 ];
 
 // TODO:testing practice enemy count from URL param. remove before production.
-const enemyCount = window.location.search
+const before = window.location.search
   .replace("?", "")
   .split("&")
-  .find((param) => param.startsWith("count="))
+  .find((param) => param.startsWith("before="))
   ?.split("=")[1];
-const practiceEnemyCount = enemyCount ? parseInt(enemyCount, 10) : 10;
+const practiceEnemyCount = before ? parseInt(before, 10) : 10;
 
 export const enemyBeforeConfig: TEnemyConfig[] = randomEnemyRange(
   "before",
